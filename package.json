@@ -1,0 +1,50 @@
+{
+  "name": "hardened-fetch",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/hardened-fetch.d.ts",
+  "scripts": {
+    "lint": "eslint . --ext ts,tsx,js,jsx",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,yml}'",
+    "spec": "tsx --test --test-reporter spec src/*.spec.ts",
+    "verify": "npm run lint && npm run type-check && npm run format",
+    "test": "npm run verify && npm run spec",
+    "build": "tsc",
+    "prepublishOnly": "npm run test && npm run build",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "Matt Hinchliffe",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i-like-robots/hardened-fetch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/i-like-robots/hardened-fetch/issues"
+  },
+  "homepage": "https://github.com/i-like-robots/hardened-fetch",
+  "dependencies": {
+    "@types/http-errors": "^2.0.4",
+    "bottleneck": "^2.19.5",
+    "http-errors": "^2.0.0",
+    "parse-link-header": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.8",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "tsx": "^4.6.0",
+    "undici": "^5.28.1"
+  },
+  "engines": {
+    "node": ">= 18.0.0"
+  }
+}
