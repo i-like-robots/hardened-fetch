@@ -1,15 +1,34 @@
 import Bottleneck from 'bottleneck'
 import { makeRequest } from './makeRequest.js'
+import { createRateLimiter } from './rateLimiter.js'
+import type { HeaderFormat, HeaderName } from './rateLimiter.js'
 
 export type CreateTransportProps = {
-  concurrency: number
+  requestsPerSecond?: number
+  requestTimeout?: number
+  rateLimitHeaderName?: HeaderName
+  rateLimitHeaderFormat?: HeaderFormat
 }
 
-export function createTransport({ concurrency }: CreateTransportProps) {
-  const limiter = new Bottleneck({
-    maxConcurrent: concurrency,
-    minTime: Math.ceil(1000 / concurrency),
+export function createTransport({
+  requestsPerSecond = 10,
+  rateLimitHeaderName = 'X-Rate-Limit-Reset',
+  rateLimitHeaderFormat = 'date',
+}: CreateTransportProps) {
+  const queue = new Bottleneck({
+    maxConcurrent: requestsPerSecond,
+    minTime: Math.ceil(1000 / requestsPerSecond),
   })
 
-  return limiter.wrap(makeRequest)
+  const rateLimiter = createRateLimiter(rateLimitHeaderName, rateLimitHeaderFormat)
+
+  return queue.wrap((url: string, init: RequestInit, retries: number, timeout: number) => {
+    return makeRequest({
+      url,
+      init,
+      retries,
+      timeout,
+      rateLimiter,
+    })
+  })
 }
