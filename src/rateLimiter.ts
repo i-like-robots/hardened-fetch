@@ -5,7 +5,7 @@ export type HeaderName =
   | 'X-Rate-Limit-Reset'
   | string
 
-export type HeaderFormat = 'date' | 'seconds' | 'milliseconds'
+export type HeaderFormat = 'datetime' | 'epoch' | 'seconds' | 'milliseconds'
 
 const RESPONSE_CODES = new Set([403, 422, 429, 503])
 
@@ -13,12 +13,15 @@ export function getResponseDate(response: Response): number {
   return Date.parse(response.headers.get('Date')) || Date.now()
 }
 
-export function parseHeaderValue(value: string, format: HeaderFormat) {
+export function parseResetValue(value: string, format: HeaderFormat) {
   let parsed: number
 
   switch (format) {
-    case 'date':
-      parsed = new Date(value).getTime()
+    case 'datetime':
+      parsed = Date.parse(value)
+      break
+    case 'epoch':
+      parsed = new Date(parseInt(value, 10)).getTime()
       break
     case 'seconds':
       parsed = parseInt(value, 10) * 1000
@@ -44,11 +47,11 @@ export function rateLimiter(
     const value = response.headers.get(headerName)
 
     if (value) {
-      const ms = parseHeaderValue(value, headerFormat)
-      const date = getResponseDate(response)
+      const ms = parseResetValue(value, headerFormat)
 
       // Add extra 1 second to account for sub second differences
-      if (ms > date) {
+      if (headerFormat === 'datetime' || headerFormat === 'epoch') {
+        const date = getResponseDate(response)
         return ms - date + 1000
       } else {
         return ms
