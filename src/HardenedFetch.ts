@@ -1,4 +1,5 @@
 import Bottleneck from 'bottleneck'
+import parseLinkHeader from 'parse-link-header'
 import { makeRequest } from './makeRequest.js'
 import { createRateLimiter } from './rateLimiter.js'
 import type { HeaderFormat, HeaderName } from './rateLimiter.js'
@@ -46,5 +47,24 @@ export class HardenedFetch {
       timeout: this.options.requestTimeout,
       rateLimiter,
     })
+  }
+
+  async paginatedFetch(
+    url: string,
+    init: RequestInit = {},
+    responses: Response[] = []
+  ): Promise<Response[]> {
+    const response = await this.fetch(url, init)
+
+    responses.push(response)
+
+    const linkHeader = response.headers.get('Link')
+    const links = parseLinkHeader(linkHeader)
+
+    if (links?.next) {
+      return this.paginatedFetch(links.next.url, init, responses)
+    } else {
+      return responses
+    }
   }
 }
