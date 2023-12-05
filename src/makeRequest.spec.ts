@@ -24,7 +24,7 @@ describe('Make request', () => {
       const response = await makeRequest({
         url: 'http://example.com/ok',
         retries: 0,
-        rateLimiter: mock.fn(() => 0),
+        rateLimiter: () => 0,
       })
 
       assert.ok(response instanceof Response)
@@ -41,7 +41,7 @@ describe('Make request', () => {
           makeRequest({
             url: 'http://example.com/404',
             retries: 0,
-            rateLimiter: mock.fn(() => 0),
+            rateLimiter: () => 0,
           }),
         'NotFound'
       )
@@ -55,7 +55,7 @@ describe('Make request', () => {
           makeRequest({
             url: 'http://example.com/500',
             retries: 0,
-            rateLimiter: mock.fn(() => 0),
+            rateLimiter: () => 0,
           }),
         'InternalServerError'
       )
@@ -64,14 +64,14 @@ describe('Make request', () => {
 
   describe('Request timeouts', () => {
     it('throws when timeout is exceeded', async () => {
-      mockClient.intercept({ path: '/timeout' }).reply(200, 'OK').delay(500)
+      mockClient.intercept({ path: '/timeout' }).reply(200, 'OK').delay(200)
 
       await assert.rejects(
         () =>
           makeRequest({
             url: 'http://example.com/timeout',
             timeout: 100,
-            rateLimiter: mock.fn(() => 0),
+            rateLimiter: () => 0,
           }),
         'TimeoutError'
       )
@@ -89,7 +89,7 @@ describe('Make request', () => {
         await makeRequest({
           url: 'http://example.com/retries',
           retries: 3,
-          rateLimiter: mock.fn(() => 0),
+          rateLimiter: () => 0,
         })
       } catch {
         assert.equal(mockedFetch.mock.callCount(), 4)
@@ -101,25 +101,16 @@ describe('Make request', () => {
 
   describe('Rate limiting', () => {
     it('waits until the rate limit timeout', async () => {
-      // const responseDate = new Date()
-
       const wait = 500
 
-      mockClient.intercept({ path: '/ratelimit' }).reply(429, 'Rate Limit Exceeded', {
-        // headers: {
-        //   'X-Rate-Limit-Remaining': '0',
-        //   'X-Rate-Limit-Reset': `${Math.max((responseDate.getTime() + wait) / 1000)}`,
-        //   Date: responseDate.toISOString(),
-        // },
-      })
-
+      mockClient.intercept({ path: '/ratelimit' }).reply(429, 'Rate Limit Exceeded')
       mockClient.intercept({ path: '/ratelimit' }).reply(200, 'OK')
 
       const now = Date.now()
       const response = await makeRequest({
         url: 'http://example.com/ratelimit',
         retries: 1,
-        rateLimiter: mock.fn(() => wait),
+        rateLimiter: () => wait,
       })
 
       assert.ok(response.ok)
