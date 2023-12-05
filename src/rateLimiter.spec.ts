@@ -20,7 +20,7 @@ describe('Rate Limiter', () => {
 
     describe('without a date header', () => {
       it('returns the current timestamp', () => {
-        const response = new Response(null, null)
+        const response = new Response(null)
 
         assert.equal(getResponseDate(response), Date.now())
       })

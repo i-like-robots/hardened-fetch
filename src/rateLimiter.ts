@@ -10,7 +10,8 @@ export type HeaderFormat = 'datetime' | 'epoch' | 'seconds' | 'milliseconds'
 const RESPONSE_CODES = new Set([403, 422, 429, 503])
 
 export function getResponseDate(response: Response): number {
-  return Date.parse(response.headers.get('Date')) || Date.now()
+  const value = response.headers.get('Date')
+  return value ? Date.parse(value) : Date.now()
 }
 
 export function parseResetValue(value: string, format: HeaderFormat) {
