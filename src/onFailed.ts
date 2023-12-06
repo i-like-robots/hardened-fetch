@@ -3,27 +3,27 @@ import type Bottleneck from 'bottleneck'
 import type { HttpError } from 'http-errors'
 import type { HeaderFormat } from './utils.js'
 
-export type OnRequestFailOptions = {
+export type OnFailedOpts = {
   retries: number
   // doNotRetry: number[]
   resetHeaderFormat: HeaderFormat
 }
 
-export function onRequestFail(
-  options: Partial<OnRequestFailOptions>,
-  error: HttpError,
+export function onFailed(
+  opts: Partial<OnFailedOpts>,
+  err: HttpError,
   info: Bottleneck.EventInfoRetryable
 ): number | void {
-  const state: OnRequestFailOptions = Object.assign(
+  const state: OnFailedOpts = Object.assign(
     {
       retries: 3,
       // doNotRetry: [400, 401, 403, 404, 422, 451],
       resetHeaderFormat: 'seconds',
     },
-    options
+    opts
   )
 
-  const { response } = error
+  const { response } = err
 
   if (info.retryCount < state.retries) {
     if (response.status === 429) {

@@ -20,10 +20,10 @@ describe('Hardened Fetch', () => {
 
   describe('.constructor()', () => {
     it('merges given options with defaults', () => {
-      const instance = new HardenedFetch({ requestsPerSecond: 5, requestRetries: 5 })
+      const instance = new HardenedFetch({ requestsPerSecond: 5, retries: 5 })
 
       assert.equal(instance.options.requestsPerSecond, 5)
-      assert.equal(instance.options.requestRetries, 5)
+      assert.equal(instance.options.retries, 5)
     })
 
     it('creates a queue with Bottleneck', () => {
@@ -84,6 +84,20 @@ describe('Hardened Fetch', () => {
 
       assert.ok(response.ok)
       assert.ok(Date.now() - date.getTime() >= wait * 1000)
+    })
+
+    it('throws an error on failure', async () => {
+      mockClient.intercept({ path: '/' }).reply(500)
+
+      const instance = new HardenedFetch({ retries: 0 })
+
+      try {
+        await instance.fetch('http://www.example.com/')
+      } catch (err) {
+        console.error({ err })
+      }
+
+      assert.rejects(() => instance.fetch('http://www.example.com/'), Error)
     })
   })
 })
