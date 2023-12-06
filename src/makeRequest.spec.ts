@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { after, before, describe, it, mock } from 'node:test'
+import { after, before, describe, it } from 'node:test'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { makeRequest } from './makeRequest.js'
 
@@ -23,8 +23,6 @@ describe('Make request', () => {
 
       const response = await makeRequest({
         url: 'http://example.com/ok',
-        retries: 0,
-        rateLimiter: () => 0,
       })
 
       assert.ok(response instanceof Response)
@@ -40,8 +38,6 @@ describe('Make request', () => {
         async () =>
           makeRequest({
             url: 'http://example.com/404',
-            retries: 0,
-            rateLimiter: () => 0,
           }),
         'NotFound'
       )
@@ -54,8 +50,6 @@ describe('Make request', () => {
         () =>
           makeRequest({
             url: 'http://example.com/500',
-            retries: 0,
-            rateLimiter: () => 0,
           }),
         'InternalServerError'
       )
@@ -71,50 +65,9 @@ describe('Make request', () => {
           makeRequest({
             url: 'http://example.com/timeout',
             timeout: 100,
-            rateLimiter: () => 0,
           }),
         'TimeoutError'
       )
-    })
-  })
-
-  describe('Retries', () => {
-    it('repeats a request after receiving a non-successful response', async () => {
-      const mockedFetch = mock.method(globalThis, 'fetch')
-
-      // Initial request + X retries
-      mockClient.intercept({ path: '/retries' }).reply(503, 'Unavailable').times(4)
-
-      try {
-        await makeRequest({
-          url: 'http://example.com/retries',
-          retries: 3,
-          rateLimiter: () => 0,
-        })
-      } catch {
-        assert.equal(mockedFetch.mock.callCount(), 4)
-      }
-
-      mock.reset()
-    })
-  })
-
-  describe('Rate limiting', () => {
-    it('waits until the rate limit timeout', async () => {
-      const wait = 500
-
-      mockClient.intercept({ path: '/ratelimit' }).reply(429, 'Rate Limit Exceeded')
-      mockClient.intercept({ path: '/ratelimit' }).reply(200, 'OK')
-
-      const now = Date.now()
-      const response = await makeRequest({
-        url: 'http://example.com/ratelimit',
-        retries: 1,
-        rateLimiter: () => wait,
-      })
-
-      assert.ok(response.ok)
-      assert.ok(Date.now() - now > wait)
     })
   })
 })
