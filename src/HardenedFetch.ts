@@ -2,27 +2,10 @@ import Bottleneck from 'bottleneck'
 import parseLinkHeader from 'parse-link-header'
 import { onRequestFail } from './onRequestFail.js'
 import { makeRequest } from './makeRequest.js'
-import type { HeaderFormat } from './utils.js'
+import type { OnRequestFailOptions } from './onRequestFail.js'
 
-export type HardenedFetchOptions = {
+export type HardenedFetchOptions = Partial<OnRequestFailOptions> & {
   requestsPerSecond: number
-  requestRetries: number
-  requestRetryAfter: number
-  // doNotRetry: number[]
-  // fallbackRetryAfter: number
-  // rateLimitRemaining: HeaderName
-  rateLimitHeaderFormat: HeaderFormat
-}
-
-const defaults: HardenedFetchOptions = {
-  requestsPerSecond: 10,
-  requestRetries: 3,
-  requestRetryAfter: 1000,
-  // responseCodesRateLimited: [429], // TODO
-  // doNotRetry: [400, 401, 403, 404, 422, 451], // TODO
-  // fallbackRetryAfter: 5000, // TODO
-  // rateLimitRemaining: 'X-RateLimit-Remaining', // TODO
-  rateLimitHeaderFormat: 'seconds',
 }
 
 export class HardenedFetch {
@@ -31,20 +14,19 @@ export class HardenedFetch {
   public queue: Bottleneck
 
   constructor(options: Partial<HardenedFetchOptions> = {}) {
-    this.options = { ...defaults, ...options }
+    this.options = Object.assign(
+      {
+        requestsPerSecond: 10,
+      },
+      options
+    )
 
     this.queue = new Bottleneck({
       maxConcurrent: this.options.requestsPerSecond,
       minTime: Math.ceil(1000 / this.options.requestsPerSecond),
     })
 
-    // TODO: clean up
-    const onRequestFailOptions = {
-      retries: this.options.requestRetries,
-      retryAfter: this.options.requestRetryAfter,
-      resetFormat: this.options.rateLimitHeaderFormat,
-    }
-    this.queue.on('failed', onRequestFail.bind(null, onRequestFailOptions))
+    this.queue.on('failed', onRequestFail.bind(null, this.options))
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000): Promise<Response> {

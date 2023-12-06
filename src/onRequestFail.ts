@@ -6,9 +6,7 @@ import type { HeaderFormat } from './utils.js'
 export type OnRequestFailOptions = {
   retries: number
   // doNotRetry: number[]
-  // fallbackRetryAfter: number
-  // rateLimitRemaining: HeaderName
-  resetFormat: HeaderFormat
+  resetHeaderFormat: HeaderFormat
 }
 
 export function onRequestFail(
@@ -19,7 +17,8 @@ export function onRequestFail(
   const state: OnRequestFailOptions = Object.assign(
     {
       retries: 3,
-      resetFormat: 'seconds',
+      // doNotRetry: [400, 401, 403, 404, 422, 451],
+      resetHeaderFormat: 'seconds',
     },
     options
   )
@@ -31,9 +30,9 @@ export function onRequestFail(
       const value = getResetValue(response)
 
       if (value) {
-        let reset = parseResetValue(value, state.resetFormat)
+        let reset = parseResetValue(value, state.resetHeaderFormat)
 
-        if (['datetime', 'epoch'].includes(state.resetFormat)) {
+        if (['datetime', 'epoch'].includes(state.resetHeaderFormat)) {
           reset = reset - getResponseDate(response)
         }
 
