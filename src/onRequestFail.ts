@@ -1,16 +1,7 @@
-import { parseResetValue } from './rateLimiter.js'
+import { getResetValue, getResponseDate, parseResetValue } from './utils.js'
 import type Bottleneck from 'bottleneck'
 import type { HttpError } from 'http-errors'
-import type { HeaderFormat } from './rateLimiter.js'
-
-// TODO: move to utils
-function getRateLimitReset(response: Response): string | null {
-  const name = ['Retry-After', 'RateLimit-Reset', 'X-RateLimit-Reset', 'X-Rate-Limit-Reset'].find(
-    (name) => response.headers.has(name)
-  )
-
-  return name ? response.headers.get(name) : null
-}
+import type { HeaderFormat } from './utils.js'
 
 export type OnRequestFailOptions = {
   retries: number
@@ -34,20 +25,24 @@ export function onRequestFail(
   )
 
   const { response } = error
-  
+
   if (info.retryCount < state.retries) {
     if (response.status === 429) {
-      const rateLimitReset = getRateLimitReset(response)
-  
-      if (rateLimitReset) {
-        const wait = parseResetValue(rateLimitReset, state.resetFormat)
-  
+      const value = getResetValue(response)
+
+      if (value) {
+        let reset = parseResetValue(value, state.resetFormat)
+
+        if (['datetime', 'epoch'].includes(state.resetFormat)) {
+          reset = reset - getResponseDate(response)
+        }
+
         // Add extra 1 second to account for sub second differences
-        return Math.max(wait, 0) + 1000
+        return Math.max(reset, 0) + 1000
       }
     }
 
-    // Basic exponential backoff
+    // Exponential backoff
     return Math.pow(info.retryCount + 1, 2) * 1000
   }
 }

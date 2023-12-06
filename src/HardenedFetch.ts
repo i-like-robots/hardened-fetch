@@ -2,7 +2,7 @@ import Bottleneck from 'bottleneck'
 import parseLinkHeader from 'parse-link-header'
 import { onRequestFail } from './onRequestFail.js'
 import { makeRequest } from './makeRequest.js'
-import type { HeaderFormat, HeaderName } from './rateLimiter.js'
+import type { HeaderFormat } from './utils.js'
 
 export type HardenedFetchOptions = {
   requestsPerSecond: number
@@ -11,7 +11,6 @@ export type HardenedFetchOptions = {
   // doNotRetry: number[]
   // fallbackRetryAfter: number
   // rateLimitRemaining: HeaderName
-  rateLimitHeaderName: HeaderName
   rateLimitHeaderFormat: HeaderFormat
 }
 
@@ -23,7 +22,6 @@ const defaults: HardenedFetchOptions = {
   // doNotRetry: [400, 401, 403, 404, 422, 451], // TODO
   // fallbackRetryAfter: 5000, // TODO
   // rateLimitRemaining: 'X-RateLimit-Remaining', // TODO
-  rateLimitHeaderName: 'X-RateLimit-Reset',
   rateLimitHeaderFormat: 'seconds',
 }
 

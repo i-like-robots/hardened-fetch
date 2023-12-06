@@ -1,11 +1,11 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { getResponseDate, parseResetValue, rateLimiter } from './rateLimiter.js'
+import { getResponseDate, getResetValue, parseResetValue } from './utils.js'
 
-describe('Rate Limiter', () => {
+describe('Utils', () => {
   describe('.getResponseDate()', () => {
     describe('with a date header', () => {
-      it('parses the header value and returns a timestamp', () => {
+      it('returns the response date as a timestamp', () => {
         const date = new Date('2023-11-28T22:36:49.000Z')
 
         const response = new Response(null, {
@@ -69,55 +69,34 @@ describe('Rate Limiter', () => {
     })
   })
 
-  describe('.rateLimiter()', () => {
-    describe('when a request receives a relevant response code', () => {
-      describe('and there is a retry offset', () => {
-        it('returns the wait time in milliseconds', () => {
-          const response = new Response(null, {
-            status: 429,
-            headers: {
-              'x-rate-limit-retry': '12',
-            },
-          })
-
-          assert.equal(rateLimiter(response, 'x-rate-limit-retry', 'seconds'), 12000)
+  describe('.getResetValue()', () => {
+    describe('and there is a retry or reset header', () => {
+      it('finds the retry header', () => {
+        const response = new Response(null, {
+          headers: {
+            'Retry-After': '12',
+          },
         })
+
+        assert.equal(getResetValue(response), '12')
       })
 
-      describe('and there is a retry date', () => {
-        it('returns the wait time relative to the response date in milliseconds', () => {
-          const date = new Date('2023-11-28T22:36:49.000Z')
-
-          const response = new Response(null, {
-            status: 429,
-            headers: {
-              'x-rate-limit-retry': String(date.getTime() + 12000),
-              date: date.toISOString(),
-            },
-          })
-
-          assert.equal(rateLimiter(response, 'x-rate-limit-retry', 'epoch'), 13000)
+      it('finds the reset header', () => {
+        const response = new Response(null, {
+          headers: {
+            'X-Rate-Limit-Reset': '12',
+          },
         })
-      })
 
-      describe('and there is no retry date', () => {
-        it('throws an error', () => {
-          const response = new Response(null, {
-            status: 429,
-          })
-
-          assert.throws(() => rateLimiter(response, 'x-rate-limit-retry', 'epoch'), Error)
-        })
+        assert.equal(getResetValue(response), '12')
       })
     })
 
-    describe('when a request does not receive a relevant response code', () => {
-      it('returns zero', () => {
-        const response = new Response(null, {
-          status: 404,
-        })
+    describe('and there is no retry header', () => {
+      it('returns null', () => {
+        const response = new Response(null, {})
 
-        assert.equal(rateLimiter(response, 'x-rate-limit-retry', 'seconds'), 0)
+        assert.equal(getResetValue(response), null)
       })
     })
   })

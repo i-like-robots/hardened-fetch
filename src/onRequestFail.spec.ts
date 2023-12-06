@@ -18,7 +18,7 @@ describe('On request fail', () => {
       assert.ok(typeof onRequestFail({}, error, info) === 'number')
     })
 
-    it('returns an exponential number', () => {
+    it('exponentially increases the number as retry count increases', () => {
       const response = new Response(null, {
         status: 500,
       })
@@ -48,15 +48,15 @@ describe('On request fail', () => {
   })
 
   describe('Rate limiting', () => {
-    it('parses the rate limit reset header', () => {
+    it('parses the rate limit reset header + 1 second', () => {
       const response = new Response(null, {
         status: 429,
-        headers: { 'x-rate-limit-retry': '12' },
+        headers: { 'X-Rate-Limit-Reset': '12' },
       })
       const error = createHttpError(429, { response })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(onRequestFail({}, error, info), 31000)
+      assert.equal(onRequestFail({}, error, info), 13000)
     })
   })
 })
