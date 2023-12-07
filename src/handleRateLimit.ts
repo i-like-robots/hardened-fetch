@@ -1,19 +1,16 @@
-export type HeaderFormat = 'datetime' | 'epoch' | 'seconds' | 'milliseconds'
+export type HeaderFormat = 'datetime' | 'seconds' | 'milliseconds'
 
 export function getResponseDate(response: Response): number {
   const value = response.headers.get('Date')
   return value ? Date.parse(value) : Date.now()
 }
 
-export function parseResetValue(value: string, format: HeaderFormat) {
+export function parseHeaderValue(value: string, format: HeaderFormat) {
   let parsed: number
 
   switch (format) {
     case 'datetime':
       parsed = Date.parse(value)
-      break
-    case 'epoch':
-      parsed = new Date(parseInt(value, 10)).getTime()
       break
     case 'seconds':
       parsed = parseInt(value, 10) * 1000
@@ -30,10 +27,27 @@ export function parseResetValue(value: string, format: HeaderFormat) {
   }
 }
 
-export function getResetValue(response: Response): string | null {
+export function getHeaderValue(response: Response): string | null {
   const name = ['Retry-After', 'RateLimit-Reset', 'X-RateLimit-Reset', 'X-Rate-Limit-Reset'].find(
     (name) => response.headers.has(name)
   )
 
   return name ? response.headers.get(name) : null
+}
+
+export function handleRateLimit(response: Response, headerFormat: HeaderFormat): number {
+  const value = getHeaderValue(response)
+
+  if (value) {
+    const reset = parseHeaderValue(value, headerFormat)
+
+    // Assume it's a timestamp if > 1 day
+    if (reset > 1000 * 60 * 60 * 24) {
+      return reset - getResponseDate(response)
+    }
+
+    return reset
+  }
+
+  return 0
 }

@@ -1,20 +1,20 @@
-import { getResetValue, getResponseDate, parseResetValue } from './utils.js'
+import { handleRateLimit } from './handleRateLimit.js'
 import type Bottleneck from 'bottleneck'
 import type { HttpError } from 'http-errors'
-import type { HeaderFormat } from './utils.js'
+import type { HeaderFormat } from './handleRateLimit.js'
 
-export type OnFailedOpts = {
+export type HandleFailedOpts = {
   retries: number
   // doNotRetry: number[]
   resetHeaderFormat: HeaderFormat
 }
 
-export function onFailed(
-  opts: Partial<OnFailedOpts>,
+export function handleFailed(
+  opts: Partial<HandleFailedOpts>,
   err: HttpError,
   info: Bottleneck.EventInfoRetryable
 ): number | void {
-  const state: OnFailedOpts = Object.assign(
+  const state: HandleFailedOpts = Object.assign(
     {
       retries: 3,
       // doNotRetry: [400, 401, 403, 404, 422, 451],
@@ -27,17 +27,11 @@ export function onFailed(
 
   if (info.retryCount < state.retries) {
     if (response.status === 429) {
-      const value = getResetValue(response)
+      const reset = handleRateLimit(response, state.resetHeaderFormat)
 
-      if (value) {
-        let reset = parseResetValue(value, state.resetHeaderFormat)
-
-        if (['datetime', 'epoch'].includes(state.resetHeaderFormat)) {
-          reset = reset - getResponseDate(response)
-        }
-
+      if (reset) {
         // Add extra 1 second to account for sub second differences
-        return Math.max(reset, 0) + 1000
+        return reset + 1000
       }
     }
 

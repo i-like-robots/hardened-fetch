@@ -31,11 +31,11 @@ describe('Make request', () => {
   })
 
   describe('Bad responses', () => {
-    it('rejects with a 404 errors', async () => {
+    it('rejects with 40x errors', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
       await assert.rejects(
-        async () =>
+        () =>
           makeRequest({
             url: 'http://example.com/404',
           }),
@@ -43,7 +43,7 @@ describe('Make request', () => {
       )
     })
 
-    it('rejects with 500 errors', async () => {
+    it('rejects with 50x errors', async () => {
       mockClient.intercept({ path: '/500' }).reply(500, 'Internal Server Error')
 
       await assert.rejects(

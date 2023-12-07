@@ -1,10 +1,10 @@
 import Bottleneck from 'bottleneck'
 import parseLinkHeader from 'parse-link-header'
-import { onFailed } from './onFailed.js'
+import { handleFailed } from './handleFailed.js'
 import { makeRequest } from './makeRequest.js'
-import type { OnFailedOpts } from './onFailed.js'
+import type { HandleFailedOpts } from './handleFailed.js'
 
-export type HardenedFetchOpts = Partial<OnFailedOpts> & {
+export type HardenedFetchOpts = Partial<HandleFailedOpts> & {
   requestsPerSecond: number
 }
 
@@ -26,7 +26,7 @@ export class HardenedFetch {
       minTime: Math.ceil(1000 / this.options.requestsPerSecond),
     })
 
-    this.queue.on('failed', onFailed.bind(null, this.options))
+    this.queue.on('failed', handleFailed.bind(null, this.options))
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000): Promise<Response> {

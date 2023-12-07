@@ -1,10 +1,10 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
 import createHttpError from 'http-errors'
-import Bottleneck from 'bottleneck'
-import { onFailed } from './onFailed.js'
+import { handleFailed } from './handleFailed.js'
+import type Bottleneck from 'bottleneck'
 
-describe('On request fail', () => {
+describe('Handle Failed', () => {
   describe('Retries', () => {
     it('returns a number', () => {
       const response = new Response(null, {
@@ -15,7 +15,7 @@ describe('On request fail', () => {
       })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.ok(typeof onFailed({}, error, info) === 'number')
+      assert.ok(typeof handleFailed({}, error, info) === 'number')
     })
 
     it('exponentially increases the number as retry count increases', () => {
@@ -29,9 +29,9 @@ describe('On request fail', () => {
       const info2 = { retryCount: 1 } as Bottleneck.EventInfoRetryable
       const info3 = { retryCount: 2 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(onFailed({}, error, info1), 1000)
-      assert.equal(onFailed({}, error, info2), 4000)
-      assert.equal(onFailed({}, error, info3), 9000)
+      assert.equal(handleFailed({}, error, info1), 1000)
+      assert.equal(handleFailed({}, error, info2), 4000)
+      assert.equal(handleFailed({}, error, info3), 9000)
     })
 
     it('returns nothing when retry count is exceeded', () => {
@@ -43,7 +43,7 @@ describe('On request fail', () => {
       })
       const info = { retryCount: 3 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(onFailed({}, error, info), undefined)
+      assert.equal(handleFailed({}, error, info), undefined)
     })
   })
 
@@ -56,7 +56,7 @@ describe('On request fail', () => {
       const error = createHttpError(429, { response })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(onFailed({}, error, info), 13000)
+      assert.equal(handleFailed({}, error, info), 13000)
     })
   })
 })
