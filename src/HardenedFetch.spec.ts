@@ -19,11 +19,11 @@ describe('Hardened Fetch', () => {
   })
 
   describe('.constructor()', () => {
-    it('merges given options with defaults', () => {
+    it('merges user options with defaults', () => {
       const instance = new HardenedFetch({ requestsPerSecond: 5, retries: 5 })
 
-      assert.equal(instance.options.requestsPerSecond, 5)
-      assert.equal(instance.options.retries, 5)
+      assert.equal(instance.opts.requestsPerSecond, 5)
+      assert.equal(instance.opts.retries, 5)
     })
 
     it('creates a queue with Bottleneck', () => {

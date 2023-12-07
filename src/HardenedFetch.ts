@@ -8,25 +8,24 @@ export type HardenedFetchOpts = Partial<HandleFailedOpts> & {
   requestsPerSecond: number
 }
 
+const defaults: HardenedFetchOpts = {
+  requestsPerSecond: 10,
+}
+
 export class HardenedFetch {
-  public options: HardenedFetchOpts
+  public opts: HardenedFetchOpts
 
   public queue: Bottleneck
 
   constructor(opts: Partial<HardenedFetchOpts> = {}) {
-    this.options = Object.assign(
-      {
-        requestsPerSecond: 10,
-      },
-      opts
-    )
+    this.opts = Object.assign({}, defaults, opts)
 
     this.queue = new Bottleneck({
-      maxConcurrent: this.options.requestsPerSecond,
-      minTime: Math.ceil(1000 / this.options.requestsPerSecond),
+      maxConcurrent: this.opts.requestsPerSecond,
+      minTime: Math.ceil(1000 / this.opts.requestsPerSecond),
     })
 
-    this.queue.on('failed', handleFailed.bind(null, this.options))
+    this.queue.on('failed', handleFailed.bind(null, this.opts))
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000): Promise<Response> {

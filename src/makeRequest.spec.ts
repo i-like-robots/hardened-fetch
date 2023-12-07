@@ -3,7 +3,7 @@ import { after, before, describe, it } from 'node:test'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { makeRequest } from './makeRequest.js'
 
-describe('Make request', () => {
+describe('Make Request', () => {
   const mockAgent = new MockAgent()
   const mockClient = mockAgent.get('http://example.com')
 
