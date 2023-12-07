@@ -5,11 +5,13 @@ import { makeRequest } from './makeRequest.js'
 import type { HandleFailedOpts } from './handleFailed.js'
 
 export type HardenedFetchOpts = Partial<HandleFailedOpts> & {
-  requestsPerSecond: number
+  maxRequests: number
+  perMilliseconds: number
 }
 
 const defaults: HardenedFetchOpts = {
-  requestsPerSecond: 10,
+  maxRequests: 10,
+  perMilliseconds: 1000,
 }
 
 export class HardenedFetch {
@@ -21,8 +23,8 @@ export class HardenedFetch {
     this.opts = Object.assign({}, defaults, opts)
 
     this.queue = new Bottleneck({
-      maxConcurrent: this.opts.requestsPerSecond,
-      minTime: Math.ceil(1000 / this.opts.requestsPerSecond),
+      maxConcurrent: this.opts.maxRequests,
+      minTime: Math.ceil(this.opts.perMilliseconds / this.opts.maxRequests),
     })
 
     this.queue.on('failed', handleFailed.bind(null, this.opts))

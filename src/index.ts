@@ -1,1 +1,1 @@
-export { HardenedFetch } from './HardenedFetch.js'
+export { HardenedFetch as default } from './HardenedFetch.js'
