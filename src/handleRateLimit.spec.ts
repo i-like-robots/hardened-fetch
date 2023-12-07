@@ -1,6 +1,11 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { getHeaderValue, getResponseDate, handleRateLimit, parseHeaderValue } from './handleRateLimit.js'
+import {
+  getHeaderValue,
+  getResponseDate,
+  handleRateLimit,
+  parseHeaderValue,
+} from './handleRateLimit.js'
 
 describe('Handle Rate Limit', () => {
   describe('.getResponseDate()', () => {
