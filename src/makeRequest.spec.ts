@@ -40,6 +40,17 @@ describe('Make Request', () => {
 
       await assert.rejects(() => makeRequest('http://example.com/500'), 'InternalServerError')
     })
+
+    it('appends request and response to the error', async () => {
+      try {
+        mockClient.intercept({ path: '/500' }).reply(500, 'Internal Server Error')
+
+        await makeRequest('http://example.com/500')
+      } catch (err) {
+        assert.ok(err.request instanceof Request)
+        assert.ok(err.response instanceof Response)
+      }
+    })
   })
 
   describe('Request timeouts', () => {

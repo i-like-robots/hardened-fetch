@@ -6,11 +6,12 @@ export async function makeRequest(
   timeout = 9000
 ): Promise<Response> {
   const signal = AbortSignal.timeout(timeout)
-  const res = await fetch(url, { ...init, signal })
+  const req = new Request(url, { ...init, signal })
+  const res = await fetch(req)
 
   if (res.ok) {
     return res
   }
 
-  throw createHttpError(res.status, { response: res })
+  throw createHttpError(res.status, { request: req, response: res })
 }

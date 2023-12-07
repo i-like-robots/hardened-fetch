@@ -22,7 +22,7 @@ export function handleFailed(
 ): number | void {
   const opts: HandleFailedOpts = Object.assign({}, defaults, options)
 
-  const { response: res } = error
+  const res = error.response as Response
 
   if (info.retryCount < opts.retries && !opts.doNotRetry.has(res.status)) {
     if (res.status === 429) {
