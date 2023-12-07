@@ -21,9 +21,7 @@ describe('Make request', () => {
     it('resolves with the HTTP response', async () => {
       mockClient.intercept({ path: '/ok' }).reply(200, 'OK')
 
-      const response = await makeRequest({
-        url: 'http://example.com/ok',
-      })
+      const response = await makeRequest('http://example.com/ok')
 
       assert.ok(response instanceof Response)
       assert.ok(response.ok)
@@ -34,25 +32,13 @@ describe('Make request', () => {
     it('rejects with 40x errors', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
-      await assert.rejects(
-        () =>
-          makeRequest({
-            url: 'http://example.com/404',
-          }),
-        'NotFound'
-      )
+      await assert.rejects(() => makeRequest('http://example.com/404'), 'NotFound')
     })
 
     it('rejects with 50x errors', async () => {
       mockClient.intercept({ path: '/500' }).reply(500, 'Internal Server Error')
 
-      await assert.rejects(
-        () =>
-          makeRequest({
-            url: 'http://example.com/500',
-          }),
-        'InternalServerError'
-      )
+      await assert.rejects(() => makeRequest('http://example.com/500'), 'InternalServerError')
     })
   })
 
@@ -60,14 +46,7 @@ describe('Make request', () => {
     it('throws when timeout is exceeded', async () => {
       mockClient.intercept({ path: '/timeout' }).reply(200, 'OK').delay(200)
 
-      await assert.rejects(
-        () =>
-          makeRequest({
-            url: 'http://example.com/timeout',
-            timeout: 100,
-          }),
-        'TimeoutError'
-      )
+      await assert.rejects(() => makeRequest('http://example.com/timeout', {}, 100), 'TimeoutError')
     })
   })
 })

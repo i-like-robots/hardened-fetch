@@ -90,13 +90,6 @@ describe('Hardened Fetch', () => {
       mockClient.intercept({ path: '/' }).reply(500)
 
       const instance = new HardenedFetch({ retries: 0 })
-
-      try {
-        await instance.fetch('http://www.example.com/')
-      } catch (err) {
-        console.error({ err })
-      }
-
       assert.rejects(() => instance.fetch('http://www.example.com/'), Error)
     })
   })

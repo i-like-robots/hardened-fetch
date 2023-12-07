@@ -30,11 +30,7 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000): Promise<Response> {
-    return this.queue.schedule(makeRequest, {
-      url,
-      init,
-      timeout,
-    })
+    return this.queue.schedule(makeRequest, url, init, timeout)
   }
 
   async paginatedFetch(
