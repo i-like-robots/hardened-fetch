@@ -34,23 +34,28 @@ export class HardenedFetch {
     return this.queue.schedule(makeRequest, url, init, timeout)
   }
 
-  async paginatedFetch(
-    url: string,
-    init: RequestInit = {},
-    timeout: number = 9000,
-    _responses: Response[] = []
-  ): Promise<Response[]> {
-    const response = await this.fetch(url, init, timeout)
+  async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
+    let done: boolean = false
 
-    _responses.push(response)
+    let count = 0
 
-    const linkHeader = response.headers.get('Link')
-    const links = parseLinkHeader(linkHeader)
+    let nextUrl = url
 
-    if (links?.next) {
-      return this.paginatedFetch(links.next.url, init, timeout, _responses)
-    } else {
-      return _responses
+    while (done === false) {
+      const response = await this.fetch(nextUrl, init, timeout)
+
+      const linkHeader = response.headers.get('Link')
+      const links = parseLinkHeader(linkHeader)
+      
+      if (links?.next) {
+        nextUrl = links.next.url
+      } else {
+        done = true
+      }
+
+      count++
+
+      yield { response, count, done }
     }
   }
 }

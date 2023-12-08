@@ -20,9 +20,9 @@ describe('Hardened Fetch', () => {
 
   describe('.constructor()', () => {
     it('merges user options with defaults', () => {
-      const instance = new HardenedFetch({ requestsPerSecond: 5, retries: 5 })
+      const instance = new HardenedFetch({ maxRequests: 5, retries: 5 })
 
-      assert.equal(instance.opts.requestsPerSecond, 5)
+      assert.equal(instance.opts.maxRequests, 5)
       assert.equal(instance.opts.retries, 5)
     })
 
@@ -91,6 +91,35 @@ describe('Hardened Fetch', () => {
 
       const instance = new HardenedFetch({ retries: 0 })
       assert.rejects(() => instance.fetch('http://www.example.com/'), Error)
+    })
+  })
+
+  describe('.paginatedFetch()', () => {
+    it('returns an async iterator', async () => {
+      mockClient.intercept({ path: '/1' }).reply(200, 'OK', {
+        headers: { link: '<http://www.example.com/2>; rel="next"' },
+      })
+      mockClient.intercept({ path: '/2' }).reply(200, 'OK', {
+        headers: { link: '<http://www.example.com/3>; rel="next"' },
+      })
+      mockClient.intercept({ path: '/3' }).reply(200, 'OK', {
+        headers: {},
+      })
+
+      const instance = new HardenedFetch()
+
+      const pages = instance.paginatedFetch('http://www.example.com/1')
+
+      const responses: Response[] = []
+
+      for await (const { response, count } of pages) {
+        assert.equal(response.url, `http://www.example.com/${count}`)
+        assert.ok(response instanceof Response)
+
+        responses.push(response)
+      }
+
+      assert.equal(responses.length, 3)
     })
   })
 })
