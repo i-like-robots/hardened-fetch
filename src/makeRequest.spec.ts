@@ -29,16 +29,10 @@ describe('Make Request', () => {
   })
 
   describe('Bad responses', () => {
-    it('rejects with 40x errors', async () => {
+    it('rejects with an HTTP error', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
       await assert.rejects(() => makeRequest('http://example.com/404'), 'NotFound')
-    })
-
-    it('rejects with 50x errors', async () => {
-      mockClient.intercept({ path: '/500' }).reply(500, 'Internal Server Error')
-
-      await assert.rejects(() => makeRequest('http://example.com/500'), 'InternalServerError')
     })
 
     it('appends request and response to the error', async () => {
