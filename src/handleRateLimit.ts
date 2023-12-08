@@ -1,11 +1,11 @@
 export type HeaderFormat = 'datetime' | 'seconds' | 'milliseconds'
 
-export function getResponseDate(res: Response): number {
+function getResponseDate(res: Response): number {
   const val = res.headers.get('Date')
   return val ? Date.parse(val) : Date.now()
 }
 
-export function parseHeaderValue(val: string, format: HeaderFormat) {
+function parseHeaderValue(val: string, format: HeaderFormat) {
   let parsed: number
 
   switch (format) {
@@ -27,7 +27,7 @@ export function parseHeaderValue(val: string, format: HeaderFormat) {
   }
 }
 
-export function getHeaderValue(res: Response): string | null {
+function getHeaderValue(res: Response): string | null {
   const name = ['Retry-After', 'RateLimit-Reset', 'X-RateLimit-Reset', 'X-Rate-Limit-Reset'].find(
     (name) => res.headers.has(name)
   )
