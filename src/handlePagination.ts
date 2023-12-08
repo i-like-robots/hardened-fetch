@@ -1,6 +1,6 @@
 import parseLinkHeader from 'parse-link-header'
 
-export function handlePagination(response: Response): string {
+export function handlePagination(response: Response): string | null {
   const linkHeader = response.headers.get('Link')
   const links = parseLinkHeader(linkHeader)
 
@@ -8,5 +8,5 @@ export function handlePagination(response: Response): string {
     return links.next.url
   }
 
-  return ''
+  return null
 }

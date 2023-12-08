@@ -1,6 +1,5 @@
 import assert from 'node:assert'
 import { after, before, describe, it } from 'node:test'
-import Bottleneck from 'bottleneck'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { HardenedFetch } from './HardenedFetch.js'
 
@@ -24,12 +23,6 @@ describe('Hardened Fetch', () => {
 
       assert.equal(instance.opts.maxRequests, 5)
       assert.equal(instance.opts.retries, 5)
-    })
-
-    it('creates a queue with Bottleneck', () => {
-      const instance = new HardenedFetch()
-
-      assert.ok(instance.queue instanceof Bottleneck)
     })
   })
 
