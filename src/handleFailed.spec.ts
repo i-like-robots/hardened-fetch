@@ -6,8 +6,8 @@ import type Bottleneck from 'bottleneck'
 
 describe('Handle Failed', () => {
   describe('Retries', () => {
-    describe('when retry count is within limits', () => {
-      it('returns a number', () => {
+    describe('when retry count is below limit', () => {
+      it('returns a wait in milliseconds', () => {
         const response = new Response(null, {
           status: 500,
         })
@@ -19,7 +19,7 @@ describe('Handle Failed', () => {
         assert.ok(typeof handleFailed({}, error, info) === 'number')
       })
 
-      it('exponentially increases the number as retry count increases', () => {
+      it('exponentially increases the wait time as retry count increases', () => {
         const response = new Response(null, {
           status: 500,
         })
@@ -36,7 +36,7 @@ describe('Handle Failed', () => {
       })
     })
 
-    describe('when retry count is exceeded', () => {
+    describe('when retry count reaches the limit', () => {
       it('returns nothing', () => {
         const response = new Response(null, {
           status: 500,
@@ -50,7 +50,7 @@ describe('Handle Failed', () => {
       })
     })
 
-    describe('when response status is flagged as do not retry', () => {
+    describe('when response status is flagged as not to retry', () => {
       it('returns nothing', () => {
         const response = new Response(null, {
           status: 404,
@@ -66,17 +66,19 @@ describe('Handle Failed', () => {
   })
 
   describe('Rate limiting', () => {
-    it('parses the rate limit reset header + 1 second', () => {
+    it('adds 1 second to the reset time', () => {
+      const reset = 12
+
       const response = new Response(null, {
         status: 429,
-        headers: { 'X-Rate-Limit-Reset': '12' },
+        headers: { 'X-Rate-Limit-Reset': String(reset) },
       })
       const error = createHttpError(response.status, {
         response,
       })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(handleFailed({}, error, info), 13000)
+      assert.equal(handleFailed({}, error, info), (reset + 1) * 1000)
     })
   })
 })
