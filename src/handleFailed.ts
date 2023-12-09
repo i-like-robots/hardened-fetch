@@ -5,13 +5,13 @@ import type { HeaderFormat } from './handleRateLimit.js'
 
 export type HandleFailedOpts = {
   retries: number
-  doNotRetry: Set<number>
+  doNotRetry: number[]
   headerFormat: HeaderFormat
 }
 
 const defaults: HandleFailedOpts = {
   retries: 3,
-  doNotRetry: new Set([400, 401, 403, 404, 422, 451]),
+  doNotRetry: [400, 401, 403, 404, 422, 451],
   headerFormat: 'seconds',
 }
 
@@ -24,7 +24,7 @@ export function handleFailed(
 
   const res = error.response as Response
 
-  if (info.retryCount < opts.retries && !opts.doNotRetry.has(res.status)) {
+  if (info.retryCount < opts.retries && !opts.doNotRetry.includes(res.status)) {
     if (res.status === 429) {
       const reset = handleRateLimit(res, opts.headerFormat)
 
