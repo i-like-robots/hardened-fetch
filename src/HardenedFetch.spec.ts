@@ -50,7 +50,7 @@ describe('Hardened Fetch', () => {
       assert.ok(response instanceof Response)
     })
 
-    it('throws an error on failure', async () => {
+    it('rejects with an error on failure', async () => {
       mockClient.intercept({ path: '/' }).reply(500)
 
       const instance = new HardenedFetch({ retries: 0 })
@@ -84,6 +84,22 @@ describe('Hardened Fetch', () => {
       }
 
       assert.equal(responses.length, 3)
+    })
+
+    it('rejects with an error on failure', async () => {
+      mockClient.intercept({ path: '/1' }).reply(200, 'OK', {
+        headers: { link: '<http://www.example.com/2>; rel="next"' },
+      })
+      mockClient.intercept({ path: '/2' }).reply(404, 'Not Found')
+
+      const instance = new HardenedFetch()
+
+      const pages = instance.paginatedFetch('http://www.example.com/1')
+
+      await pages.next()
+
+      assert.rejects(() => pages.next(), Error)
+
     })
   })
 })

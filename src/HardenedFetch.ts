@@ -30,7 +30,7 @@ export class HardenedFetch {
     this.queue.on('failed', handleFailed.bind(null, this.opts))
   }
 
-  fetch(url: string, init: RequestInit = {}, timeout: number = 9000): Promise<Response> {
+  fetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
     return this.queue.schedule(makeRequest, url, init, timeout)
   }
 
@@ -44,7 +44,7 @@ export class HardenedFetch {
       nextUrl = handlePagination(response)
       count++
 
-      yield { response, count }
+      yield { response, count, done: !!nextUrl }
     }
   }
 }
