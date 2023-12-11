@@ -1,5 +1,7 @@
 import type { HeaderFormat, HeaderName } from './options.d.ts'
 
+const ONE_DAY = 1000 * 60 * 60 * 24
+
 export function getResponseDate(res: Response): number {
   const val = res.headers.get('Date')
   return val ? Date.parse(val) : Date.now()
@@ -25,7 +27,7 @@ export function getResetHeader(res: Response, name: HeaderName, format: HeaderFo
 
     if (isNaN(parsed) === false) {
       // Assume it's a timestamp if > 1 day
-      if (parsed > 1000 * 60 * 60 * 24) {
+      if (parsed > ONE_DAY) {
         return parsed - getResponseDate(res)
       }
 

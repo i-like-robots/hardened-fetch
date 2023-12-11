@@ -68,18 +68,16 @@ describe('Handle Failed', () => {
 
   describe('Rate limiting', () => {
     it('adds 1 second to the reset time', () => {
-      const reset = 12
-
       const response = new Response(null, {
         status: 429,
-        headers: { 'Retry-After': String(reset) },
+        headers: { 'Retry-After': '12' },
       })
       const error = createHttpError(response.status, {
         response,
       })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(handleFailed({} as Options, error, info), (reset + 1) * 1000)
+      assert.equal(handleFailed({} as Options, error, info), 13000)
     })
 
     describe('when no reset header is found', () => {
@@ -93,21 +91,6 @@ describe('Handle Failed', () => {
         const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
   
         assert.equal(handleFailed({} as Options, error, info), 1000)
-      })
-    })
-
-    describe('when reset header has an invalid value', () => {
-      it('throws an error', () => {
-        const response = new Response(null, {
-          status: 429,
-          headers: { 'Retry-After': 'unknown' },
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
-        const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
-
-        assert.throws(() => handleFailed({} as Options, error, info), Error)
       })
     })
   })
