@@ -42,8 +42,6 @@ export class HardenedFetch {
       minTime: this.opts.throttle.minRequestTime,
     })
 
-    // this.queue.on('failed', () => { console.log('Fail 1') })
-    // this.queue.on('failed', () => { console.log('Fail 2') })
     this.queue.on('failed', handleFailed.bind(null, this.opts))
   }
 

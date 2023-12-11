@@ -81,5 +81,34 @@ describe('Handle Failed', () => {
 
       assert.equal(handleFailed({} as Options, error, info), (reset + 1) * 1000)
     })
+
+    describe('when no reset header is found', () => {
+      it('returns default retry value', () => {
+        const response = new Response(null, {
+          status: 429,
+        })
+        const error = createHttpError(response.status, {
+          response,
+        })
+        const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
+  
+        assert.equal(handleFailed({} as Options, error, info), 1000)
+      })
+    })
+
+    describe('when reset header has an invalid value', () => {
+      it('throws an error', () => {
+        const response = new Response(null, {
+          status: 429,
+          headers: { 'Retry-After': 'unknown' },
+        })
+        const error = createHttpError(response.status, {
+          response,
+        })
+        const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
+
+        assert.throws(() => handleFailed({} as Options, error, info), Error)
+      })
+    })
   })
 })
