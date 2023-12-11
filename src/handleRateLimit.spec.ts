@@ -4,24 +4,6 @@ import { handleRateLimit } from './handleRateLimit.js'
 
 describe('Handle Rate Limit', () => {
   describe('when a header is available', () => {
-    it('finds any "standard" reset header', () => {
-      const res1 = new Response(null, {
-        headers: {
-          'Retry-After': '12',
-        },
-      })
-
-      assert.equal(handleRateLimit(res1, 'seconds'), 12000)
-
-      const res2 = new Response(null, {
-        headers: {
-          'X-Rate-Limit-Reset': '12',
-        },
-      })
-
-      assert.equal(handleRateLimit(res2, 'seconds'), 12000)
-    })
-
     describe('when reset header is a date time string', () => {
       it('returns an offset in milliseconds', () => {
         const date = new Date('2023-11-28T22:36:49.000Z')
@@ -33,7 +15,7 @@ describe('Handle Rate Limit', () => {
           },
         })
 
-        assert.equal(handleRateLimit(res, 'milliseconds'), 30000)
+        assert.equal(handleRateLimit(res, { headerFormat: 'milliseconds' }), 30000)
       })
     })
 
@@ -48,7 +30,7 @@ describe('Handle Rate Limit', () => {
           },
         })
 
-        assert.equal(handleRateLimit(res, 'seconds'), 30000)
+        assert.equal(handleRateLimit(res, { headerFormat: 'seconds' }), 30000)
       })
     })
 
@@ -63,7 +45,7 @@ describe('Handle Rate Limit', () => {
           },
         })
 
-        assert.equal(handleRateLimit(res, 'milliseconds'), 30000)
+        assert.equal(handleRateLimit(res, { headerFormat: 'milliseconds' }), 30000)
       })
     })
 
@@ -75,7 +57,7 @@ describe('Handle Rate Limit', () => {
           },
         })
 
-        assert.equal(handleRateLimit(res, 'seconds'), 30000)
+        assert.equal(handleRateLimit(res, { headerFormat: 'seconds' }), 30000)
       })
     })
 
@@ -87,7 +69,7 @@ describe('Handle Rate Limit', () => {
           },
         })
 
-        assert.equal(handleRateLimit(res, 'milliseconds'), 30000)
+        assert.equal(handleRateLimit(res, { headerFormat: 'milliseconds' }), 30000)
       })
     })
   })
@@ -100,15 +82,15 @@ describe('Handle Rate Limit', () => {
         },
       })
 
-      assert.throws(() => handleRateLimit(res, 'seconds'), Error)
+      assert.throws(() => handleRateLimit(res, { headerFormat: 'seconds' }), Error)
     })
   })
 
   describe('when no reset header is found', () => {
-    it('returns zero', () => {
+    it('returns undefined', () => {
       const res = new Response(null, {})
 
-      assert.equal(handleRateLimit(res, 'seconds'), 0)
+      assert.equal(handleRateLimit(res, { headerFormat: 'seconds' }), undefined)
     })
   })
 })

@@ -1,32 +1,49 @@
 import Bottleneck from 'bottleneck'
 import { handleFailed } from './handleFailed.js'
-import { makeRequest } from './makeRequest.js'
-import type { HandleFailedOpts } from './handleFailed.js'
 import { handlePagination } from './handlePagination.js'
+import { makeRequest } from './makeRequest.js'
+import type { Options, RateLimitOptions, RetryOptions, ThrottleOptions } from './options.js'
 
-export type HardenedFetchOpts = Partial<HandleFailedOpts> & {
-  maxRequests: number
-  perMilliseconds: number
-}
+export type HardenedFetchOpts = Partial<{
+  throttle: Partial<ThrottleOptions>
+  rateLimits: Partial<RateLimitOptions>
+  retries: Partial<RetryOptions>
+}>
 
-const defaults: HardenedFetchOpts = {
-  maxRequests: 10,
-  perMilliseconds: 1000,
+const defaults: Options = {
+  throttle: {
+    maxConcurrency: 10,
+    minRequestTime: 0,
+  },
+  retries: {
+    maxRetries: 3,
+    doNotRetry: [400, 401, 403, 404, 422, 451],
+  },
+  rateLimits: {
+    headerName: 'Retry-After',
+    headerFormat: 'seconds',
+  },
 }
 
 export class HardenedFetch {
-  public opts: HardenedFetchOpts
+  public opts: Options
 
   public queue: Bottleneck
 
-  constructor(opts: Partial<HardenedFetchOpts> = {}) {
-    this.opts = Object.assign({}, defaults, opts)
+  constructor(opts: HardenedFetchOpts = {}) {
+    this.opts = {
+      throttle: { ...defaults.throttle, ...opts.throttle },
+      rateLimits: { ...defaults.rateLimits, ...opts.rateLimits },
+      retries: { ...defaults.retries, ...opts.retries },
+    }
 
     this.queue = new Bottleneck({
-      maxConcurrent: this.opts.maxRequests,
-      minTime: Math.ceil(this.opts.perMilliseconds / this.opts.maxRequests),
+      maxConcurrent: this.opts.throttle.maxConcurrency,
+      minTime: this.opts.throttle.minRequestTime,
     })
 
+    // this.queue.on('failed', () => { console.log('Fail 1') })
+    // this.queue.on('failed', () => { console.log('Fail 2') })
     this.queue.on('failed', handleFailed.bind(null, this.opts))
   }
 

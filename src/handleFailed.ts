@@ -1,32 +1,25 @@
 import { handleRateLimit } from './handleRateLimit.js'
 import type Bottleneck from 'bottleneck'
 import type { HttpError } from 'http-errors'
-import type { HeaderFormat } from './handleRateLimit.js'
+import type { Options, RetryOptions } from './options.d.ts'
 
-export type HandleFailedOpts = {
-  retries: number
-  doNotRetry: number[]
-  headerFormat: HeaderFormat
-}
-
-const defaults: HandleFailedOpts = {
-  retries: 3,
+const defaults: RetryOptions = {
+  maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
-  headerFormat: 'seconds',
 }
 
 export function handleFailed(
-  options: Partial<HandleFailedOpts>,
+  options: Options,
   error: HttpError,
   info: Bottleneck.EventInfoRetryable
 ): number | void {
-  const opts: HandleFailedOpts = Object.assign({}, defaults, options)
+  const opts = Object.assign({}, defaults, options.retries)
 
   const res = error.response as Response
 
-  if (info.retryCount < opts.retries && !opts.doNotRetry.includes(res.status)) {
+  if (info.retryCount < opts.maxRetries) {
     if (res.status === 429) {
-      const reset = handleRateLimit(res, opts.headerFormat)
+      const reset = handleRateLimit(res, options.rateLimits)
 
       if (reset) {
         // Add extra 1 second to account for sub second differences
@@ -34,7 +27,9 @@ export function handleFailed(
       }
     }
 
-    // Exponential backoff
-    return Math.pow(info.retryCount + 1, 2) * 1000
+    if (!opts.doNotRetry.includes(res.status)) {
+      // Exponential backoff
+      return Math.pow(info.retryCount + 1, 2) * 1000
+    }
   }
 }

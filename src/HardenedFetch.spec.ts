@@ -19,10 +19,21 @@ describe('Hardened Fetch', () => {
 
   describe('.constructor()', () => {
     it('merges user options with defaults', () => {
-      const instance = new HardenedFetch({ maxRequests: 5, retries: 5 })
+      const instance = new HardenedFetch({
+        throttle: {
+          maxConcurrency: 5,
+        },
+        retries: {
+          maxRetries: 5,
+        },
+        rateLimits: {
+          headerFormat: 'datetime',
+        },
+      })
 
-      assert.equal(instance.opts.maxRequests, 5)
-      assert.equal(instance.opts.retries, 5)
+      assert.equal(instance.opts.throttle.maxConcurrency, 5)
+      assert.equal(instance.opts.retries.maxRetries, 5)
+      assert.equal(instance.opts.rateLimits.headerFormat, 'datetime')
     })
   })
 
@@ -51,10 +62,10 @@ describe('Hardened Fetch', () => {
     })
 
     it('rejects with an error on failure', async () => {
-      mockClient.intercept({ path: '/' }).reply(500)
+      mockClient.intercept({ path: '/' }).reply(404)
 
-      const instance = new HardenedFetch({ retries: 0 })
-      assert.rejects(() => instance.fetch('http://www.example.com/'), 'InternalServerError')
+      const instance = new HardenedFetch()
+      assert.rejects(() => instance.fetch('http://www.example.com/'), 'NotFound')
     })
   })
 
@@ -98,8 +109,7 @@ describe('Hardened Fetch', () => {
 
       await pages.next()
 
-      assert.rejects(() => pages.next(), Error)
-
+      assert.rejects(() => pages.next(), 'NotFound')
     })
   })
 })
