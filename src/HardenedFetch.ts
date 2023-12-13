@@ -41,7 +41,7 @@ export class HardenedFetch {
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
     let count = 0
-    let nextUrl: string | null = url
+    let nextUrl: string | void = url
 
     while (nextUrl) {
       const response = await this.fetch(nextUrl, init, timeout)

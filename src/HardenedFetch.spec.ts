@@ -18,7 +18,7 @@ describe('Hardened Fetch', () => {
   })
 
   describe('.constructor()', () => {
-    it('merges user options with defaults', () => {
+    it('merges given options with defaults', () => {
       const instance = new HardenedFetch({
         maxRetries: 5,
         headerFormat: 'datetime',
@@ -53,11 +53,11 @@ describe('Hardened Fetch', () => {
       assert.ok(response instanceof Response)
     })
 
-    it('rejects with an error on failure', async () => {
+    it('rejects with a HTTP error on failure', async () => {
       mockClient.intercept({ path: '/' }).reply(404)
 
       const instance = new HardenedFetch()
-      assert.rejects(() => instance.fetch('http://www.example.com/'), 'NotFound')
+      await assert.rejects(() => instance.fetch('http://www.example.com/'), /NotFound/)
     })
   })
 
@@ -89,7 +89,7 @@ describe('Hardened Fetch', () => {
       assert.equal(responses.length, 3)
     })
 
-    it('rejects with an error on failure', async () => {
+    it('rejects with an HTTP error on failure', async () => {
       mockClient.intercept({ path: '/1' }).reply(200, 'OK', {
         headers: { link: '<http://www.example.com/2>; rel="next"' },
       })
@@ -101,7 +101,7 @@ describe('Hardened Fetch', () => {
 
       await pages.next()
 
-      assert.rejects(() => pages.next(), 'NotFound')
+      await assert.rejects(() => pages.next(), /NotFound/)
     })
   })
 })

@@ -16,14 +16,14 @@ describe('Handle Pagination', () => {
   })
 
   describe('when a response has a link header with no next value', () => {
-    it('returns null', () => {
+    it('returns nothing', () => {
       const response = new Response(null, {
         headers: {
           link: `<http://www.example.com/2>; rel="prev"`,
         },
       })
 
-      assert.equal(handlePagination(response), null)
+      assert.equal(handlePagination(response), undefined)
     })
   })
 })
