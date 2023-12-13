@@ -1,6 +1,6 @@
 import Bottleneck from 'bottleneck'
+import parseLinkHeader from 'parse-link-header'
 import { handleFailed } from './handleFailed.js'
-import { handlePagination } from './handlePagination.js'
 import { makeRequest } from './makeRequest.js'
 import type { Options } from './options.d.ts'
 
@@ -40,16 +40,17 @@ export class HardenedFetch {
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
-    let count = 0
-    let nextUrl: string | void = url
+    let nextUrl: string | null = url
 
     while (nextUrl) {
       const response = await this.fetch(nextUrl, init, timeout)
 
-      nextUrl = handlePagination(response)
-      count++
+      const linkHeader = response.headers.get('Link')
+      const links = parseLinkHeader(linkHeader)
 
-      yield { response, count, done: !!nextUrl }
+      nextUrl = links?.next ? links.next.url : null
+
+      yield { response, done: !nextUrl }
     }
   }
 }

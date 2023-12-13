@@ -69,24 +69,20 @@ describe('Hardened Fetch', () => {
       mockClient.intercept({ path: '/2' }).reply(200, 'OK', {
         headers: { link: '<http://www.example.com/3>; rel="next"' },
       })
-      mockClient.intercept({ path: '/3' }).reply(200, 'OK', {
-        headers: {},
-      })
+      mockClient.intercept({ path: '/3' }).reply(200, 'OK')
 
       const instance = new HardenedFetch()
 
       const pages = instance.paginatedFetch('http://www.example.com/1')
 
-      const responses: Response[] = []
+      const responses: boolean[] = []
 
-      for await (const { response, count } of pages) {
-        assert.equal(response.url, `http://www.example.com/${count}`)
+      for await (const { response, done } of pages) {
         assert.ok(response instanceof Response)
-
-        responses.push(response)
+        responses.push(done)
       }
 
-      assert.equal(responses.length, 3)
+      assert.deepEqual(responses, [false, false, true])
     })
 
     it('rejects with an HTTP error on failure', async () => {
