@@ -44,18 +44,15 @@ All of the options and their defaults are shown below:
 
 ```js
 const client = new HardenedFetch({
-  throttle: {
-    maxConcurrency: 10,
-    minRequestTime: 0,
-  },
-  retries: {
-    maxRetries: 3,
-    doNotRetry: [400, 401, 403, 404, 422, 451],
-  },
-  rateLimits: {
-    headerName: 'Retry-After',
-    headerFormat: 'seconds',
-  },
+  // Throttle options
+  maxConcurrency: 10,
+  minRequestTime: 0,
+  // Retry options
+  maxRetries: 3,
+  doNotRetry: [400, 401, 403, 404, 422, 451],
+  // Rate limit options
+  headerName: 'Retry-After',
+  headerFormat: 'seconds',
 })
 ```
 

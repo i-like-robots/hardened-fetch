@@ -7,7 +7,11 @@ export function getResponseDate(res: Response): number {
   return val ? Date.parse(val) : Date.now()
 }
 
-export function getResetHeader(res: Response, name: HeaderName, format: HeaderFormat) {
+export function getResetHeader(
+  res: Response,
+  name: HeaderName = 'Retry-After',
+  format: HeaderFormat = 'seconds'
+) {
   const val = res.headers.get(name)
 
   if (val) {

@@ -20,20 +20,12 @@ describe('Hardened Fetch', () => {
   describe('.constructor()', () => {
     it('merges user options with defaults', () => {
       const instance = new HardenedFetch({
-        throttle: {
-          maxConcurrency: 5,
-        },
-        retries: {
-          maxRetries: 5,
-        },
-        rateLimits: {
-          headerFormat: 'datetime',
-        },
+        maxRetries: 5,
+        headerFormat: 'datetime',
       })
 
-      assert.equal(instance.opts.throttle.maxConcurrency, 5)
-      assert.equal(instance.opts.retries.maxRetries, 5)
-      assert.equal(instance.opts.rateLimits.headerFormat, 'datetime')
+      assert.equal(instance.options.maxRetries, 5)
+      assert.equal(instance.options.headerFormat, 'datetime')
     })
   })
 

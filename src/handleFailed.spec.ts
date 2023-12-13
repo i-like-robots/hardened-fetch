@@ -3,94 +3,76 @@ import { describe, it } from 'node:test'
 import createHttpError from 'http-errors'
 import { handleFailed } from './handleFailed.js'
 import type Bottleneck from 'bottleneck'
-import type { Options } from './options.d.ts'
+
+const options = {
+  // Retry options
+  maxRetries: 3,
+  doNotRetry: [404],
+  // Rate limit options
+  headerName: 'Retry-After' as const,
+  headerFormat: 'seconds' as const,
+}
+
+const createError = (status: number, headers = {}) => {
+  const response = new Response(null, { status, headers })
+  return createHttpError(response.status, { response })
+}
 
 describe('Handle Failed', () => {
   describe('Retries', () => {
     describe('when retry count is below limit', () => {
       it('returns a wait in milliseconds', () => {
-        const response = new Response(null, {
-          status: 500,
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
+        const error = createError(500)
         const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-        assert.ok(typeof handleFailed({} as Options, error, info) === 'number')
+        assert.ok(typeof handleFailed(options, error, info) === 'number')
       })
 
       it('exponentially increases the wait time as retry count increases', () => {
-        const response = new Response(null, {
-          status: 500,
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
+        const error = createError(500)
         const info1 = { retryCount: 0 } as Bottleneck.EventInfoRetryable
         const info2 = { retryCount: 1 } as Bottleneck.EventInfoRetryable
         const info3 = { retryCount: 2 } as Bottleneck.EventInfoRetryable
 
-        assert.equal(handleFailed({} as Options, error, info1), 1000)
-        assert.equal(handleFailed({} as Options, error, info2), 4000)
-        assert.equal(handleFailed({} as Options, error, info3), 9000)
+        assert.equal(handleFailed(options, error, info1), 1000)
+        assert.equal(handleFailed(options, error, info2), 4000)
+        assert.equal(handleFailed(options, error, info3), 9000)
       })
     })
 
     describe('when retry count reaches the limit', () => {
       it('returns nothing', () => {
-        const response = new Response(null, {
-          status: 500,
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
+        const error = createError(500)
         const info = { retryCount: 3 } as Bottleneck.EventInfoRetryable
 
-        assert.equal(handleFailed({} as Options, error, info), undefined)
+        assert.equal(handleFailed(options, error, info), undefined)
       })
     })
 
     describe('when response status is flagged as not to retry', () => {
       it('returns nothing', () => {
-        const response = new Response(null, {
-          status: 404,
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
+        const error = createError(404)
         const info = { retryCount: 3 } as Bottleneck.EventInfoRetryable
 
-        assert.equal(handleFailed({} as Options, error, info), undefined)
+        assert.equal(handleFailed(options, error, info), undefined)
       })
     })
   })
 
   describe('Rate limiting', () => {
     it('adds 1 second to the reset time', () => {
-      const response = new Response(null, {
-        status: 429,
-        headers: { 'Retry-After': '12' },
-      })
-      const error = createHttpError(response.status, {
-        response,
-      })
+      const error = createError(429, { 'Retry-After': '12' })
       const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
 
-      assert.equal(handleFailed({} as Options, error, info), 13000)
+      assert.equal(handleFailed(options, error, info), 13000)
     })
 
     describe('when no reset header is found', () => {
       it('returns default retry value', () => {
-        const response = new Response(null, {
-          status: 429,
-        })
-        const error = createHttpError(response.status, {
-          response,
-        })
+        const error = createError(429)
         const info = { retryCount: 0 } as Bottleneck.EventInfoRetryable
-  
-        assert.equal(handleFailed({} as Options, error, info), 1000)
+
+        assert.equal(handleFailed(options, error, info), 1000)
       })
     })
   })

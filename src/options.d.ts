@@ -1,5 +1,3 @@
-import type { HeaderFormat, HeaderName } from './handleRateLimit.js'
-
 export type HeaderName =
   | 'Retry-After'
   | 'RateLimit-Reset'
@@ -24,13 +22,9 @@ export type RetryOptions = {
 
 export type RateLimitOptions = {
   /** The name of the rate limit reset header */
-  headerName: HeaderName
+  headerName: HeaderName // TODO
   /** The expected format of the rate limit reset header */
-  headerFormat: HeaderFormat
+  headerFormat: HeaderFormat // TODO
 }
 
-export type Options = {
-  throttle: ThrottleOptions
-  rateLimits: RateLimitOptions
-  retries: RetryOptions
-}
+export type Options = ThrottleOptions & RetryOptions & RateLimitOptions
