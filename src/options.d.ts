@@ -16,7 +16,7 @@ export type ThrottleOptions = {
 export type RetryOptions = {
   /** Number of retry attempts for failed requests. */
   maxRetries: number
-  /** List of HTTP status codes that should not trigger a retry attempt. */
+  /** List of HTTP status codes that will not trigger a retry attempt. */
   doNotRetry: number[]
 }
 

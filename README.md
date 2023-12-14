@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/i-like-robots/hardened-fetch/blob/main/LICENSE) ![build status](https://github.com/i-like-robots/hardened-fetch/actions/workflows/test.yml/badge.svg?branch=main) [![npm version](https://img.shields.io/npm/v/hardened-fetch.svg?style=flat)](https://www.npmjs.com/package/hardened-fetch)
 
-Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff, retries respecting rate limit headers, support for API pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
+Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff, rate limit detection, pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
 
 ```js
 import HardenedFetch from 'hardened-fetch'
@@ -32,13 +32,14 @@ Creates a new Hardened Fetch client.
 
 Constructor Options:
 
-| Name              | Type       | Description                                                                                      |
-| ----------------- | ---------- | ------------------------------------------------------------------------------------------------ |
-| `maxRequests`     | `number`   | Maximum number of concurrent. requests.                                                           |
-| `perMilliseconds` | `number`   | Maximum number of requests per time window.                                                      |
-| `retries`         | `number`   | Number of retry attempts for failed requests. Set to 0 to disable retries.                       |
-| `doNotRetry`      | `number[]` | List of HTTP status codes that should not trigger a retry attempt.                               |
-| `headerFormat`    | `string`   | The expected format of the [rate limit reset header](https://www.ietf.org/archive/id/draft-polli-ratelimit-headers-02.html#name-ratelimit-reset), one of `"datetime"`, `"seconds"` or `"milliseconds"`. |
+| Name             | Type       | Description                                                                                                                                                                                                                         |
+| ---------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maxConcurrency` | `number`   | How many requests can be running at the same time.                                                                                                                                                                                  |
+| `minRequestTime` | `number`   | How long to wait after launching a request before launching another one.                                                                                                                                                            |
+| `maxRetries`     | `number`   | Number of retry attempts for failed requests.                                                                                                                                                                                       |
+| `doNotRetry`     | `number[]` | List of HTTP status codes that will not trigger a retry attempt.                                                                                                                                                                    |
+| `headerName`     | `string`   | The name of the [rate limit reset header](https://www.ietf.org/archive/id/draft-polli-ratelimit-headers-02.html#name-ratelimit-reset), one of `"Retry-After"`, `"RateLimit-Reset"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
+| `headerFormat`   | `string`   | The expected format of the [rate limit reset header](https://www.ietf.org/archive/id/draft-polli-ratelimit-headers-02.html#name-ratelimit-reset), one of `"datetime"`, `"seconds"` or `"milliseconds"`.                             |
 
 All of the options and their defaults are shown below:
 
@@ -51,8 +52,8 @@ const client = new HardenedFetch({
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
   // Rate limit options
-  headerName: 'Retry-After',
-  headerFormat: 'seconds',
+  headerName: 'Retry-After', // TODO
+  headerFormat: 'seconds', // TODO
 })
 ```
 
@@ -72,7 +73,7 @@ Expects a `url` to the resource that you wish to fetch and optionally custom [se
 ```js
 const pages = client.paginatedFetch('https://swapi.dev/api/species')
 
-for await (const { response, count, done  } of pages) {
+for await (const { response, count, done } of pages) {
   const json = await response.json()
   console.log({ count, done })
 }
