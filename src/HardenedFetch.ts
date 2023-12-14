@@ -22,10 +22,7 @@ export class HardenedFetch {
   public queue: Bottleneck
 
   constructor(options: Partial<Options> = {}) {
-    this.options = {
-      ...defaults,
-      ...options,
-    }
+    this.options = Object.assign({}, defaults, options)
 
     this.queue = new Bottleneck({
       maxConcurrent: this.options.maxConcurrency,
