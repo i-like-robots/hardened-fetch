@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/i-like-robots/hardened-fetch/blob/main/LICENSE) ![build status](https://github.com/i-like-robots/hardened-fetch/actions/workflows/test.yml/badge.svg?branch=main) [![npm version](https://img.shields.io/npm/v/hardened-fetch.svg?style=flat)](https://www.npmjs.com/package/hardened-fetch)
 
-Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff, rate limit detection, pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
+Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff and rate limit support, pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
 
 ```js
 import HardenedFetch from 'hardened-fetch'

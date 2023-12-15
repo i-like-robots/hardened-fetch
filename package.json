@@ -1,7 +1,16 @@
 {
   "name": "hardened-fetch",
   "version": "1.0.0",
-  "description": "",
+  "description": "Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff and rate limit support, pagination, and descriptive errors.",
+  "keywords": [
+    "fetch",
+    "request",
+    "retry",
+    "backoff",
+    "rate-limit",
+    "concurrency",
+    "throttle"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
@@ -26,7 +35,6 @@
     "prepublishOnly": "npm run test && npm run build",
     "prepare": "husky install"
   },
-  "keywords": [],
   "author": "Matt Hinchliffe",
   "license": "MIT",
   "repository": {
