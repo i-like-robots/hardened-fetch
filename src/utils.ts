@@ -1,6 +1,6 @@
 import type { ResetFormat, RateLimitHeader } from './options.d.ts'
 
-const ONE_DAY = 1000 * 60 * 60 * 24
+const ONE_YEAR = 1000 * 60 * 60 * 24 * 365
 
 export function getResponseDate(res: Response): number {
   const val = res.headers.get('Date')
@@ -30,8 +30,8 @@ export function getResetHeader(
     }
 
     if (isNaN(parsed) === false) {
-      // Assume it's a timestamp if > 1 day
-      if (parsed > ONE_DAY) {
+      // Assume it's a timestamp if > 1 year
+      if (parsed > ONE_YEAR) {
         return parsed - getResponseDate(res)
       }
 
