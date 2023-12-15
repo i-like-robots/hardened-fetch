@@ -24,6 +24,14 @@ $ npm install hardened-fetch
 [npm]: https://www.npmjs.com/
 [npm install]: https://docs.npmjs.com/getting-started/installing-npm-packages-locally
 
+## Features
+
+- Request timeouts 
+- Throttle concurrent requests and request rate
+- Retries failed requests with exponential back off
+- Retries rate-limited requests according to reset time
+- Easily step-through paginated API responses
+
 ## API
 
 ### `new HardenedFetch([options] = {})`
