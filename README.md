@@ -32,14 +32,14 @@ Creates a new Hardened Fetch client.
 
 Constructor Options:
 
-| Name             | Type       | Description                                                                                                                                                                                                                         |
-| ---------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `maxConcurrency` | `number`   | How many requests can be running at the same time.                                                                                                                                                                                  |
-| `minRequestTime` | `number`   | How long to wait after launching a request before launching another one.                                                                                                                                                            |
-| `maxRetries`     | `number`   | Number of retry attempts for failed requests.                                                                                                                                                                                       |
-| `doNotRetry`     | `number[]` | List of HTTP status codes that will not trigger a retry attempt.                                                                                                                                                                    |
-| `headerName`     | `string`   | The name of the [rate limit reset header](https://www.ietf.org/archive/id/draft-polli-ratelimit-headers-02.html#name-ratelimit-reset), one of `"Retry-After"`, `"RateLimit-Reset"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
-| `headerFormat`   | `string`   | The expected format of the [rate limit reset header](https://www.ietf.org/archive/id/draft-polli-ratelimit-headers-02.html#name-ratelimit-reset), one of `"datetime"`, `"seconds"` or `"milliseconds"`.                             |
+| Name              | Type       | Description                                                                                                              |
+| ----------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `maxConcurrency`  | `number`   | How many requests can be running at the same time.                                                                       |
+| `minRequestTime`  | `number`   | How long to wait after launching a request before launching another one.                                                 |
+| `maxRetries`      | `number`   | Number of retry attempts for failed requests.                                                                            |
+| `doNotRetry`      | `number[]` | List of HTTP status codes that will not trigger a retry attempt.                                                         |
+| `rateLimitHeader` | `string`   | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
+| `resetFormat`     | `string`   | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
 
 All of the options and their defaults are shown below:
 
@@ -52,8 +52,8 @@ const client = new HardenedFetch({
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
   // Rate limit options
-  headerName: 'Retry-After', // TODO
-  headerFormat: 'seconds', // TODO
+  rateLimitHeader: 'Retry-After',
+  resetFormat: 'seconds',
 })
 ```
 
@@ -68,14 +68,17 @@ const json = await response.json()
 
 ### `client.paginatedFetch(url, [options] = {}, [timeout] = 9000)`
 
-Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) which will resolve with a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object, a request `count` and `done` property on each successful iteration. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
+Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) which will resolve with a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object and `done` property on each successful iteration. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
 
 ```js
 const pages = client.paginatedFetch('https://swapi.dev/api/species')
 
-for await (const { response, count, done } of pages) {
+for await (const { response, done } of pages) {
   const json = await response.json()
-  console.log({ count, done })
+
+  if (done) {
+    console.log('Done!')
+  }
 }
 ```
 

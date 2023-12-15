@@ -9,8 +9,8 @@ const options = {
   maxRetries: 3,
   doNotRetry: [404],
   // Rate limit options
-  headerName: 'Retry-After' as const,
-  headerFormat: 'seconds' as const,
+  rateLimitHeader: 'Retry-After' as const,
+  resetFormat: 'seconds' as const,
 }
 
 const createError = (status: number, headers = {}) => {

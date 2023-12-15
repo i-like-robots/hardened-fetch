@@ -1,4 +1,4 @@
-import type { HeaderFormat, HeaderName } from './options.d.ts'
+import type { ResetFormat, RateLimitHeader } from './options.d.ts'
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
@@ -9,8 +9,8 @@ export function getResponseDate(res: Response): number {
 
 export function getResetHeader(
   res: Response,
-  name: HeaderName = 'Retry-After',
-  format: HeaderFormat = 'seconds'
+  name: RateLimitHeader = 'Retry-After',
+  format: ResetFormat = 'seconds'
 ) {
   const val = res.headers.get(name)
 

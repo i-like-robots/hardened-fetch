@@ -12,11 +12,11 @@ export function handleFailed(
 
   if (info.retryCount < options.maxRetries) {
     if (res.status === 429) {
-      const reset = getResetHeader(res, options.headerName, options.headerFormat)
+      const wait = getResetHeader(res, options.rateLimitHeader, options.resetFormat)
 
-      if (reset) {
+      if (wait) {
         // Add extra 1 second to account for sub second differences
-        return reset + 1000
+        return wait + 1000
       }
     }
 

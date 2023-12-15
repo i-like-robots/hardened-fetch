@@ -1,10 +1,11 @@
-export type HeaderName =
+export type RateLimitHeader =
   | 'Retry-After'
   | 'RateLimit-Reset'
   | 'X-RateLimit-Reset'
   | 'X-Rate-Limit-Reset'
+  | string
 
-export type HeaderFormat = 'datetime' | 'seconds' | 'milliseconds'
+export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
 
 export type ThrottleOptions = {
   /** How many requests can be running at the same time. */
@@ -22,9 +23,9 @@ export type RetryOptions = {
 
 export type RateLimitOptions = {
   /** The name of the rate limit reset header */
-  headerName: HeaderName // TODO
-  /** The expected format of the rate limit reset header */
-  headerFormat: HeaderFormat // TODO
+  rateLimitHeader: RateLimitHeader
+  /** The format of the rate limit reset header */
+  resetFormat: ResetFormat
 }
 
 export type Options = ThrottleOptions & RetryOptions & RateLimitOptions

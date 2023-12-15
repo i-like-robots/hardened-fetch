@@ -12,8 +12,8 @@ const defaults: Options = {
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
   // Rate limit options
-  headerName: 'Retry-After',
-  headerFormat: 'seconds',
+  rateLimitHeader: 'Retry-After',
+  resetFormat: 'seconds',
 }
 
 export class HardenedFetch {
