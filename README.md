@@ -5,7 +5,7 @@
 Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff and rate limit support, pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
 
 ```js
-import HardenedFetch from 'hardened-fetch'
+import { HardenedFetch } from 'hardened-fetch'
 
 const client = new HardenedFetch()
 const response = await client.fetch('https://swapi.dev/api/species/1/')
