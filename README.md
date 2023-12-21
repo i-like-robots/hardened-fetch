@@ -26,7 +26,7 @@ $ npm install hardened-fetch
 
 ## Features
 
-- Request timeouts 
+- Request timeouts
 - Throttle concurrent requests and request rate
 - Retries failed requests with exponential back off
 - Retries rate-limited requests according to reset time
@@ -40,19 +40,24 @@ Creates a new Hardened Fetch client.
 
 Constructor Options:
 
-| Name              | Type       | Description                                                                                                              |
-| ----------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `maxConcurrency`  | `number`   | How many requests can be running at the same time.                                                                       |
-| `minRequestTime`  | `number`   | How long to wait after launching a request before launching another one.                                                 |
-| `maxRetries`      | `number`   | Number of retry attempts for failed requests.                                                                            |
-| `doNotRetry`      | `number[]` | List of HTTP status codes that will not trigger a retry attempt.                                                         |
-| `rateLimitHeader` | `string`   | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
-| `resetFormat`     | `string`   | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
+| Name              | Type          | Description                                                                                                              |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `baseUrl`         | `string`      | A base URL to prepend to each request.                                                                                   |
+| `defaultHeaders`  | `HeadersInit` | Default headers to add to each request.                                                                                  |
+| `maxConcurrency`  | `number`      | How many requests can be running at the same time.                                                                       |
+| `minRequestTime`  | `number`      | How long to wait after launching a request before launching another one.                                                 |
+| `maxRetries`      | `number`      | Number of retry attempts for failed requests.                                                                            |
+| `doNotRetry`      | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
+| `rateLimitHeader` | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
+| `resetFormat`     | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
 
 All of the options and their defaults are shown below:
 
 ```js
 const client = new HardenedFetch({
+  // Request options
+  baseUrl: undefined,
+  defaultHeaders: undefined,
   // Throttle options
   maxConcurrency: 10,
   minRequestTime: 0,
