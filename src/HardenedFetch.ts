@@ -1,4 +1,4 @@
-import join from 'url-join'
+import join from 'proper-url-join'
 import Bottleneck from 'bottleneck'
 import parseLinkHeader from 'parse-link-header'
 import { handleFailed } from './handleFailed.js'

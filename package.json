@@ -48,10 +48,11 @@
   "dependencies": {
     "@types/http-errors": "^2.0.4",
     "@types/parse-link-header": "^2.0.3",
+    "@types/proper-url-join": "^2.1.4",
     "bottleneck": "^2.19.5",
     "http-errors": "^2.0.0",
     "parse-link-header": "^2.0.0",
-    "url-join": "^5.0.0"
+    "proper-url-join": "^2.1.1"
   },
   "devDependencies": {
     "@types/node": "^18.11.8",
