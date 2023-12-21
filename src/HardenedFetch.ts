@@ -1,3 +1,4 @@
+import join from 'url-join'
 import Bottleneck from 'bottleneck'
 import parseLinkHeader from 'parse-link-header'
 import { handleFailed } from './handleFailed.js'
@@ -33,6 +34,7 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
+    url = !url.startsWith('http') && this.options.baseUrl ? join(this.options.baseUrl, url) : url
     return this.queue.schedule(makeRequest, url, init, timeout)
   }
 

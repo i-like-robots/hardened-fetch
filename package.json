@@ -50,7 +50,8 @@
     "@types/parse-link-header": "^2.0.3",
     "bottleneck": "^2.19.5",
     "http-errors": "^2.0.0",
-    "parse-link-header": "^2.0.0"
+    "parse-link-header": "^2.0.0",
+    "url-join": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.8",

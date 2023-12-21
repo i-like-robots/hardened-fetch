@@ -7,6 +7,11 @@ export type RateLimitHeader =
 
 export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
 
+export type RequestOptions = {
+  /** A base URL to prepend to each request. */
+  baseUrl?: string
+}
+
 export type ThrottleOptions = {
   /** How many requests can be running at the same time. */
   maxConcurrency: number
@@ -28,4 +33,4 @@ export type RateLimitOptions = {
   resetFormat: ResetFormat
 }
 
-export type Options = ThrottleOptions & RetryOptions & RateLimitOptions
+export type Options = RequestOptions & ThrottleOptions & RetryOptions & RateLimitOptions
