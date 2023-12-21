@@ -21,11 +21,11 @@ describe('Hardened Fetch', () => {
     it('merges given options with defaults', () => {
       const instance = new HardenedFetch({
         maxRetries: 5,
-        headerFormat: 'datetime',
+        resetFormat: 'datetime',
       })
 
       assert.equal(instance.options.maxRetries, 5)
-      assert.equal(instance.options.headerFormat, 'datetime')
+      assert.equal(instance.options.resetFormat, 'datetime')
     })
   })
 
@@ -58,6 +58,26 @@ describe('Hardened Fetch', () => {
 
       const instance = new HardenedFetch()
       await assert.rejects(() => instance.fetch('http://www.example.com/'), /NotFound/)
+    })
+
+    it('appends base URL when defined', async () => {
+      mockClient.intercept({ path: '/path' }).reply(200, 'OK')
+
+      const instance = new HardenedFetch({ baseUrl: 'http://www.example.com/' })
+
+      const response = await instance.fetch('/path')
+
+      assert.equal(response.url, 'http://www.example.com/path')
+    })
+
+    it('appends default headers when defined', async () => {
+      mockClient.intercept({ path: '/', headers: { 'x-header': 'foo' } }).reply(200, 'OK')
+
+      const instance = new HardenedFetch({ defaultHeaders: { 'x-header': 'foo' } })
+
+      const response = await instance.fetch('http://www.example.com/')
+
+      assert.ok(response.ok)
     })
   })
 
