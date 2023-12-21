@@ -10,6 +10,8 @@ export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
 export type RequestOptions = {
   /** A base URL to prepend to each request. */
   baseUrl?: string
+  /** Default headers to add to each request. */
+  defaultHeaders?: RequestInit['headers']
 }
 
 export type ThrottleOptions = {
