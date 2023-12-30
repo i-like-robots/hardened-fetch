@@ -42,8 +42,8 @@ Constructor Options:
 
 | Name              | Type          | Description                                                                                                              |
 | ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `baseUrl`         | `string`      | A base URL to prepend to each request.                                                                                   |
-| `defaultHeaders`  | `HeadersInit` | Default headers to add to each request.                                                                                  |
+| `baseUrl`         | `string`      | A base URL to prepend to each request, optional.                                                                         |
+| `defaultHeaders`  | `HeadersInit` | Default headers to add to each request, optional.                                                                        |
 | `maxConcurrency`  | `number`      | How many requests can be running at the same time.                                                                       |
 | `minRequestTime`  | `number`      | How long to wait after launching a request before launching another one.                                                 |
 | `maxRetries`      | `number`      | Number of retry attempts for failed requests.                                                                            |
