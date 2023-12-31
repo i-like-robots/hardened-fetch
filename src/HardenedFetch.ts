@@ -34,8 +34,14 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
-    url = !url.startsWith('http') && this.options.baseUrl ? join(this.options.baseUrl, url) : url
-    init = { ...init, headers: { ...this.options.defaultHeaders, ...init.headers } }
+    if (this.options.baseUrl && !url.startsWith('http')) {
+      url = join(this.options.baseUrl, url)
+    }
+
+    if (this.options.defaultHeaders) {
+      const headers = Object.assign({}, this.options.defaultHeaders, init.headers)
+      init = Object.assign({}, init, { headers })
+    }
 
     return this.queue.schedule(makeRequest, url, init, timeout)
   }
