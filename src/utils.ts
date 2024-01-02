@@ -8,36 +8,36 @@ export function getResponseDate(res: Response): number {
 }
 
 export function getResetHeader(
-  res: Response,
+  response: Response,
   name: RateLimitHeader = 'Retry-After',
   format: ResetFormat = 'seconds'
 ) {
-  const val = res.headers.get(name)
+  const value = response.headers.get(name)
 
-  if (val) {
+  if (value) {
     let parsed: number
 
     switch (format) {
       case 'datetime':
-        parsed = Date.parse(val)
+        parsed = Date.parse(value)
         break
       case 'seconds':
-        parsed = parseInt(val, 10) * 1000
+        parsed = parseInt(value, 10) * 1000
         break
       case 'milliseconds':
-        parsed = parseInt(val, 10)
+        parsed = parseInt(value, 10)
         break
     }
 
     if (isNaN(parsed) === false) {
       // Assume it's a timestamp if > 1 year
       if (parsed > ONE_YEAR) {
-        return parsed - getResponseDate(res)
+        return parsed - getResponseDate(response)
       }
 
       return parsed
     } else {
-      throw new Error(`Could not coerce value "${parsed}" to a number`)
+      throw new Error(`Could not coerce value "${value}" to a number`)
     }
   }
 }
