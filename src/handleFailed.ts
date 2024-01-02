@@ -27,4 +27,9 @@ export function handleFailed(
       }
     }
   }
+
+  if (error.name === 'TimeoutError') {
+    // Exponential backoff
+    return Math.pow(info.retryCount + 1, 2) * 1000
+  }
 }

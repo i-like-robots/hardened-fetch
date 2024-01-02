@@ -32,7 +32,7 @@ describe('Make Request', () => {
     it('rejects with an HTTP error', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
-      await assert.rejects(() => makeRequest('http://example.com/404'), 'NotFound')
+      await assert.rejects(() => makeRequest('http://example.com/404'), /NotFound/)
     })
 
     it('appends request and response to the error', async () => {
@@ -51,7 +51,7 @@ describe('Make Request', () => {
     it('throws when timeout is exceeded', async () => {
       mockClient.intercept({ path: '/timeout' }).reply(200, 'OK').delay(200)
 
-      await assert.rejects(() => makeRequest('http://example.com/timeout', {}, 100), 'TimeoutError')
+      await assert.rejects(() => makeRequest('http://example.com/timeout', {}, 100), /TimeoutError/)
     })
   })
 })
