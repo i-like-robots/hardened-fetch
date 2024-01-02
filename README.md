@@ -7,9 +7,10 @@ Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, req
 ```js
 import { HardenedFetch } from 'hardened-fetch'
 
-const client = new HardenedFetch()
-const response = await client.fetch('https://swapi.dev/api/species/1/')
-const data = await response.json()
+const client = new HardenedFetch({
+  baseUrl: 'https://swapi.dev/api/',
+})
+const response = await client.fetch('/species/1/')
 ```
 
 ## Installation
