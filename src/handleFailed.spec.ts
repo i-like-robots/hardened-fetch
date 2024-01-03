@@ -49,10 +49,12 @@ describe('Handle Failed', () => {
 
     describe('when retry count reaches the limit', () => {
       it('returns nothing', () => {
-        const error = createError(500)
+        const httpError = createError(500)
+        const timeoutError = createTimeout()
         const info = { retryCount: 3 } as Bottleneck.EventInfoRetryable
 
-        assert.equal(handleFailed(options, error, info), undefined)
+        assert.equal(handleFailed(options, httpError, info), undefined)
+        assert.equal(handleFailed(options, timeoutError, info), undefined)
       })
     })
 

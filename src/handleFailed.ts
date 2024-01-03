@@ -10,10 +10,12 @@ export function handleFailed(
   error: Error,
   info: Bottleneck.EventInfoRetryable
 ): number | void {
-  if (isHttpError(error) && error?.response instanceof Response) {
-    const response = error.response
+  const retry = info.retryCount < options.maxRetries
 
-    if (info.retryCount < options.maxRetries) {
+  if (retry) {
+    if (isHttpError(error) && error?.response instanceof Response) {
+      const response = error.response
+
       if (response.status === 429) {
         const wait = getResetHeader(response, options.rateLimitHeader, options.resetFormat)
 
@@ -27,9 +29,9 @@ export function handleFailed(
         return backoff(info.retryCount)
       }
     }
-  }
 
-  if (error.name === 'TimeoutError') {
-    return backoff(info.retryCount)
+    if (error.name === 'TimeoutError') {
+      return backoff(info.retryCount)
+    }
   }
 }
