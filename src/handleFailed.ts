@@ -1,14 +1,16 @@
 import { getResetHeader } from './utils.js'
+import { isHttpError } from 'http-errors'
 import type Bottleneck from 'bottleneck'
-import { HttpError } from 'http-errors'
 import type { RateLimitOptions, RetryOptions } from './options.d.ts'
+
+const backoff = (retries: number) => Math.pow(retries + 1, 2) * 1000
 
 export function handleFailed(
   options: RetryOptions & RateLimitOptions,
-  error: Error | HttpError,
+  error: Error,
   info: Bottleneck.EventInfoRetryable
 ): number | void {
-  if (error instanceof HttpError && error?.response instanceof Response) {
+  if (isHttpError(error) && error?.response instanceof Response) {
     const response = error.response
 
     if (info.retryCount < options.maxRetries) {
@@ -22,14 +24,12 @@ export function handleFailed(
       }
 
       if (!options.doNotRetry?.includes(response.status)) {
-        // Exponential backoff
-        return Math.pow(info.retryCount + 1, 2) * 1000
+        return backoff(info.retryCount)
       }
     }
   }
 
   if (error.name === 'TimeoutError') {
-    // Exponential backoff
-    return Math.pow(info.retryCount + 1, 2) * 1000
+    return backoff(info.retryCount)
   }
 }
