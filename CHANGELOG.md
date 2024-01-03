@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1
+
+- Fixed max retries not being applied to timeout errors
+
 ## v1.2.0
 
 - Added support for retrying requests which timeout
