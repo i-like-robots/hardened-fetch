@@ -33,7 +33,7 @@ export class HardenedFetch {
     this.queue.on('failed', handleFailed.bind(null, this.options))
   }
 
-  fetch(url: string, init: RequestInit = {}, timeout: number = 30000) {
+  fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
     if (this.options.baseUrl && !url.startsWith('http')) {
       url = join(this.options.baseUrl, url)
     }
@@ -46,7 +46,7 @@ export class HardenedFetch {
     return this.queue.schedule(makeRequest, url, init, timeout)
   }
 
-  async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 9000) {
+  async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
     let nextUrl: string | null = url
 
     while (nextUrl) {

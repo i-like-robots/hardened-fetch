@@ -10,6 +10,7 @@ import { HardenedFetch } from 'hardened-fetch'
 const client = new HardenedFetch({
   baseUrl: 'https://swapi.dev/api/',
 })
+
 const response = await client.fetch('/species/1/')
 ```
 
@@ -71,7 +72,7 @@ const client = new HardenedFetch({
 })
 ```
 
-### `client.fetch(url, [init] = {}, [timeout] = 9000)`
+### `client.fetch(url, [init] = {}, [timeout] = 30000)`
 
 Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
 
@@ -80,7 +81,7 @@ const response = await client.fetch('https://swapi.dev/api/species/1/')
 const json = await response.json()
 ```
 
-### `client.paginatedFetch(url, [options] = {}, [timeout] = 9000)`
+### `client.paginatedFetch(url, [options] = {}, [timeout] = 30000)`
 
 Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) which will resolve with a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object and `done` property on each successful iteration. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
 
