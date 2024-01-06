@@ -1,6 +1,6 @@
 import join from 'proper-url-join'
 import Bottleneck from 'bottleneck'
-import parseLinkHeader from 'parse-link-header'
+import { parseLinkHeader } from '@web3-storage/parse-link-header'
 import { handleFailed } from './handleFailed.js'
 import { makeRequest } from './makeRequest.js'
 import type { Options } from './options.d.ts'
