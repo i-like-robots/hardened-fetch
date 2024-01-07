@@ -1,4 +1,3 @@
-import join from 'proper-url-join'
 import Bottleneck from 'bottleneck'
 import { parseLinkHeader } from '@web3-storage/parse-link-header'
 import { handleFailed } from './handleFailed.js'
@@ -34,16 +33,14 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    if (this.options.baseUrl && !url.startsWith('http')) {
-      url = join(this.options.baseUrl, url)
-    }
+    const resolvedUrl = new URL(url, this.options.baseUrl)
 
     if (this.options.defaultHeaders) {
       const headers = Object.assign({}, this.options.defaultHeaders, init.headers)
       init = Object.assign({}, init, { headers })
     }
 
-    return this.queue.schedule(makeRequest, url, init, timeout)
+    return this.queue.schedule(makeRequest, resolvedUrl, init, timeout)
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {

@@ -1,9 +1,9 @@
 import createHttpError from 'http-errors'
 
 export async function makeRequest(
-  url: string,
+  url: string | URL,
   init: RequestInit = {},
-  timeout = 9000
+  timeout = 30_000
 ): Promise<Response> {
   const signal = AbortSignal.timeout(timeout)
   const request = new Request(url, { ...init, signal })
