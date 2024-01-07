@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.2
+
+- Reduced number of external dependencies
+- Refactored URL building to use native URL constructor
+
 ## v1.2.1
 
 - Fixed max retries not being applied to timeout errors
