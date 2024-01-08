@@ -1,9 +1,13 @@
 # Changelog
 
+## v1.2.3
+
+- Refactored URL joining to allow path on `baseUrl` option
+
 ## v1.2.2
 
 - Reduced number of external dependencies
-- Refactored URL building to use native URL constructor
+- Refactored URL joining to use native URL constructor
 
 ## v1.2.1
 
