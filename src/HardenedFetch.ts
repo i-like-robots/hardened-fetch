@@ -2,6 +2,7 @@ import Bottleneck from 'bottleneck'
 import { parseLinkHeader } from '@web3-storage/parse-link-header'
 import { handleFailed } from './handleFailed.js'
 import { makeRequest } from './makeRequest.js'
+import { joinBaseUrl } from './utils.js'
 import type { Options } from './options.d.ts'
 
 const defaults: Options = {
@@ -33,7 +34,7 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    const resolvedUrl = new URL(url, this.options.baseUrl)
+    const resolvedUrl = joinBaseUrl(url, this.options.baseUrl)
 
     if (this.options.defaultHeaders) {
       const headers = Object.assign({}, this.options.defaultHeaders, init.headers)
