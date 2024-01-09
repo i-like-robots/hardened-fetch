@@ -25,9 +25,9 @@
     }
   },
   "scripts": {
-    "lint": "eslint . --ext ts,tsx,js,jsx",
+    "lint": "eslint . --ext ts,tsx,js,cjs,mjs,jsx",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,yml}'",
+    "format": "prettier --write '**/*.{ts,tsx,js,cjs,mjs,jsx,json,yml}'",
     "spec": "tsx --test --test-reporter spec src/*.spec.ts",
     "verify": "npm run lint && npm run type-check && npm run format",
     "test": "npm run verify && npm run spec",
