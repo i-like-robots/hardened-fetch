@@ -6,6 +6,6 @@
 .eslintignore
 .eslintrc.cjs
 .huskyrc.js
-.lintstagedrc.js
+.lintstagedrc
 .prettierignore
 .prettierrc.json
