@@ -52,11 +52,11 @@ export class HardenedFetch {
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    let nextUrl: string | null = url
+    let nextUrl: string | null | undefined = url
 
     while (nextUrl) {
       const response = await this.fetch(nextUrl, init, timeout)
-      nextUrl = this.options.nextPage(response)
+      nextUrl = await this.options.nextPage(response)
       yield { response, done: !nextUrl }
     }
   }

@@ -7,7 +7,9 @@ export type RateLimitHeader =
 
 export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
 
-export type ResponseNextFn = (response: Response) => string | null
+type NextUrl = string | null | undefined
+
+export type ResponseNextFn = (response: Response) => Promise<NextUrl> | NextUrl
 
 export type RequestOptions = {
   /** A base URL to prepend to each request. */
