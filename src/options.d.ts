@@ -7,6 +7,10 @@ export type RateLimitHeader =
 
 export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
 
+type NextUrl = string | null | undefined
+
+export type ResponseNextFn = (response: Response) => Promise<NextUrl> | NextUrl
+
 export type RequestOptions = {
   /** A base URL to prepend to each request. */
   baseUrl?: string
@@ -35,4 +39,13 @@ export type RateLimitOptions = {
   resetFormat: ResetFormat
 }
 
-export type Options = RequestOptions & ThrottleOptions & RetryOptions & RateLimitOptions
+export type PaginationOptions = {
+  /** Callback function for the `paginatedFetch()` method */
+  nextPage: ResponseNextFn
+}
+
+export type Options = RequestOptions &
+  ThrottleOptions &
+  RetryOptions &
+  RateLimitOptions &
+  PaginationOptions
