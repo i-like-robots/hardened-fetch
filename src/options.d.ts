@@ -40,7 +40,7 @@ export type RateLimitOptions = {
 }
 
 export type PaginationOptions = {
-  /** A function to handle  */
+  /** Callback function for the `paginatedFetch()` method */
   nextPage: ResponseNextFn
 }
 

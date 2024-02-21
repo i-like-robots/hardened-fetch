@@ -52,6 +52,7 @@ Constructor Options:
 | `doNotRetry`      | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
 | `rateLimitHeader` | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
 | `resetFormat`     | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
+| `nextPage`        | `function`    | Callback function for the `paginatedFetch()` method, receives the response object and should return the next URL.        |
 
 All of the options and their defaults are shown below:
 
@@ -69,6 +70,13 @@ const client = new HardenedFetch({
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',
+  // Pagination options
+  nextPage: (response: Response) => {
+    const linkHeader = response.headers.get('Link')
+    const links = parseLinkHeader(linkHeader)
+
+    return links?.next ? links.next.url : null
+  },
 })
 ```
 
