@@ -30,7 +30,7 @@ export class HardenedFetch {
       minTime: this.options.minRequestTime,
     })
 
-    this.queue.on('failed', handleFailed.bind(null, this.options))
+    this.queue.on('failed', (error, info) => handleFailed(this.options, error, info.retryCount))
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
