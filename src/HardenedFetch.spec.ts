@@ -119,5 +119,31 @@ describe('Hardened Fetch', () => {
 
       await assert.rejects(() => pages.next(), /NotFound/)
     })
+
+    it('can be modified using a custom callback', async () => {
+      type Data = { next?: string | null }
+
+      mockClient.intercept({ path: '/1' }).reply(200, { next: 'http://www.example.com/2' })
+      mockClient.intercept({ path: '/2' }).reply(200, { next: 'http://www.example.com/3' })
+      mockClient.intercept({ path: '/3' }).reply(200, {})
+
+      const nextPage = async (response: Response) => {
+        const data: Data = await response.json()
+        return data.next
+      }
+
+      const instance = new HardenedFetch({ nextPage })
+
+      const pages = instance.paginatedFetch('http://www.example.com/1')
+
+      const responses: boolean[] = []
+
+      for await (const { response, done } of pages) {
+        assert.ok(response instanceof Response)
+        responses.push(done)
+      }
+
+      assert.deepEqual(responses, [false, false, true])
+    })
   })
 })

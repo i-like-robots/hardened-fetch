@@ -15,6 +15,13 @@ const defaults: Options = {
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',
+  // Pagination options
+  nextPage: (response: Response) => {
+    const linkHeader = response.headers.get('Link')
+    const links = parseLinkHeader(linkHeader)
+
+    return links?.next ? links.next.url : null
+  },
 }
 
 export class HardenedFetch {
@@ -45,16 +52,11 @@ export class HardenedFetch {
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    let nextUrl: string | null = url
+    let nextUrl: string | null | undefined = url
 
     while (nextUrl) {
       const response = await this.fetch(nextUrl, init, timeout)
-
-      const linkHeader = response.headers.get('Link')
-      const links = parseLinkHeader(linkHeader)
-
-      nextUrl = links?.next ? links.next.url : null
-
+      nextUrl = await this.options.nextPage(response)
       yield { response, done: !nextUrl }
     }
   }
