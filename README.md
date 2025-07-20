@@ -16,7 +16,7 @@ const response = await client.fetch('/species/1/')
 
 ## Installation
 
-This is a [Node.js] module available through the [npm] registry. Node.js 18 or higher is required.
+This is a [Node.js] module available through the [npm] registry. Node.js 20 or higher is required.
 
 ```sh
 $ npm install hardened-fetch
