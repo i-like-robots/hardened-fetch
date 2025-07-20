@@ -57,7 +57,7 @@ describe('Hardened Fetch', () => {
       mockClient.intercept({ path: '/' }).reply(404)
 
       const instance = new HardenedFetch()
-      await assert.rejects(() => instance.fetch('http://www.example.com/'), /NotFound/)
+      await assert.rejects(() => instance.fetch('http://www.example.com/'), /HTTP error: 404/)
     })
 
     it('appends base URL when defined', async () => {
@@ -117,7 +117,7 @@ describe('Hardened Fetch', () => {
 
       await pages.next()
 
-      await assert.rejects(() => pages.next(), /NotFound/)
+      await assert.rejects(() => pages.next(), /HTTP error: 404/)
     })
   })
 })

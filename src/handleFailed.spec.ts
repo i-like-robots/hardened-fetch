@@ -1,8 +1,8 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import createHttpError from 'http-errors'
 import { handleFailed } from './handleFailed.js'
 import type { Options } from './options.js'
+import { HTTPError } from './errors.js'
 
 const options: Options = {
   // Throttle options
@@ -17,8 +17,10 @@ const options: Options = {
 }
 
 const createError = (status: number, headers = {}) => {
+  const request = new Request('http://www.example.com')
   const response = new Response(null, { status, headers })
-  return createHttpError(response.status, { response })
+
+  return new HTTPError(request, response)
 }
 
 const createTimeout = () => {

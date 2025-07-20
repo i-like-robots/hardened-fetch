@@ -1,4 +1,4 @@
-import createHttpError from 'http-errors'
+import { HTTPError } from './errors'
 
 export async function makeRequest(
   url: string | URL,
@@ -13,5 +13,5 @@ export async function makeRequest(
     return response
   }
 
-  throw createHttpError(response.status, { request, response })
+  throw new HTTPError(request, response)
 }

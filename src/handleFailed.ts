@@ -1,6 +1,6 @@
 import { getResetHeader } from './utils.js'
-import { isHttpError } from 'http-errors'
 import type { Options } from './options.d.ts'
+import { HTTPError } from './errors.js'
 
 const backoff = (retries: number) => Math.pow(retries + 1, 2) * 1000
 
@@ -9,12 +9,12 @@ export function handleFailed(options: Options, error: Error, retries: number): n
     return
   }
 
-  if (isHttpError(error) && error?.response instanceof Response) {
-    if (options.doNotRetry?.includes(error.status)) {
+  if (error instanceof HTTPError) {
+    if (options.doNotRetry?.includes(error.response.status)) {
       return
     }
 
-    if (error.status === 429) {
+    if (error.response.status === 429) {
       const wait = getResetHeader(error.response, options.rateLimitHeader, options.resetFormat)
 
       if (wait) {

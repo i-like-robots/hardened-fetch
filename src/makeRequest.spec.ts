@@ -32,7 +32,7 @@ describe('Make Request', () => {
     it('rejects with an HTTP error', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
-      await assert.rejects(() => makeRequest('http://example.com/404'), /NotFound/)
+      await assert.rejects(() => makeRequest('http://example.com/404'), /HTTP error: 404/)
     })
 
     it('appends request and response to the error', async () => {
