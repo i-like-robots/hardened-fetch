@@ -54,4 +54,20 @@ describe('Make Request', () => {
       await assert.rejects(() => makeRequest('http://example.com/timeout', {}, 100), /TimeoutError/)
     })
   })
+
+  describe('Request aborted', () => {
+    it('throws when abort signal is called', async () => {
+      mockClient.intercept({ path: '/abort' }).reply(200, 'OK').delay(1000)
+
+      const controller = new AbortController()
+
+      const init: RequestInit = {
+        signal: controller.signal,
+      }
+
+      setTimeout(() => controller.abort(), 100)
+
+      await assert.rejects(() => makeRequest('http://example.com/abort', init), /AbortError/)
+    })
+  })
 })

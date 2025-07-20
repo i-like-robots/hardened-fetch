@@ -5,8 +5,13 @@ export async function makeRequest(
   init: RequestInit = {},
   timeout = 30_000
 ): Promise<Response> {
-  const signal = AbortSignal.timeout(timeout)
-  const request = new Request(url, { ...init, signal })
+  const signals = [AbortSignal.timeout(timeout)]
+
+  if ('signal' in init && init.signal instanceof AbortSignal) {
+    signals.push(init.signal)
+  }
+
+  const request = new Request(url, { ...init, signal: AbortSignal.any(signals) })
   const response = await fetch(request)
 
   if (response.ok) {
