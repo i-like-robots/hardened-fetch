@@ -28,10 +28,10 @@ describe('Utils', () => {
   })
 
   describe('.getResetHeader()', () => {
-    describe('when given a date string', () => {
+    describe('when given a datetime string', () => {
       it('returns an offset in milliseconds', () => {
-        const date = new Date('2023-11-28T22:36:49.000Z')
-        const retry = new Date('2023-11-28T22:37:19.000Z')
+        const date = new Date('2023-11-28T22:36:30.000Z')
+        const retry = new Date('2023-11-28T22:37:00.000Z')
 
         const res = new Response(null, {
           headers: {
@@ -40,22 +40,49 @@ describe('Utils', () => {
           },
         })
 
-        assert.equal(getResetHeader(res, 'Retry-After', 'datetime'), 30000)
+        assert.equal(getResetHeader(res, 'Retry-After', 'datetime'), 30_000)
       })
     })
 
-    describe('when given a timestamp', () => {
+    describe('when given a timestamp in seconds', () => {
       it('returns an offset in milliseconds', () => {
-        const date = new Date('2023-11-28T22:36:49.000Z')
+        const date = new Date('2025-07-21T21:37:00.000Z')
 
         const res = new Response(null, {
           headers: {
             Date: date.toISOString(),
-            'Retry-After': String(date.getTime() + 30000),
+            'Retry-After': String(Math.floor(date.getTime() / 1000) + 30),
           },
         })
 
-        assert.equal(getResetHeader(res, 'Retry-After', 'milliseconds'), 30000)
+        assert.equal(getResetHeader(res, 'Retry-After', 'seconds'), 30_000)
+      })
+    })
+
+    describe('when given a timestamp in milliseconds', () => {
+      it('returns an offset in milliseconds', () => {
+        const date = new Date('2025-07-21T21:37:00.000Z')
+
+        const res = new Response(null, {
+          headers: {
+            Date: date.toISOString(),
+            'Retry-After': String(date.getTime() + 30_000),
+          },
+        })
+
+        assert.equal(getResetHeader(res, 'Retry-After', 'milliseconds'), 30_000)
+      })
+    })
+
+    describe('when given an offset in milliseconds', () => {
+      it('returns the offset in milliseconds', () => {
+        const res = new Response(null, {
+          headers: {
+            'Retry-After': '30000',
+          },
+        })
+
+        assert.equal(getResetHeader(res, 'Retry-After', 'milliseconds'), 30_000)
       })
     })
 
@@ -63,11 +90,11 @@ describe('Utils', () => {
       it('returns the offset in milliseconds', () => {
         const res = new Response(null, {
           headers: {
-            'Retry-After': String(30),
+            'Retry-After': '30',
           },
         })
 
-        assert.equal(getResetHeader(res, 'Retry-After', 'seconds'), 30000)
+        assert.equal(getResetHeader(res, 'Retry-After', 'seconds'), 30_000)
       })
     })
 
