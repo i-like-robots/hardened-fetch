@@ -1,9 +1,9 @@
-import Bottleneck from 'bottleneck'
 import { parseLinkHeader } from '@web3-storage/parse-link-header'
 import { handleFailed } from './handleFailed.js'
 import { makeRequest } from './makeRequest.js'
 import { joinBaseUrl } from './utils.js'
 import type { Options } from './options.d.ts'
+import { RateLimitedQueue, withRetry } from 'simple-rate-limited-queue'
 
 const defaults: Options = {
   // Throttle options
@@ -20,17 +20,15 @@ const defaults: Options = {
 export class HardenedFetch {
   public options: Options
 
-  public queue: Bottleneck
+  public queue: RateLimitedQueue
 
   constructor(options: Partial<Options> = {}) {
     this.options = Object.assign({}, defaults, options)
 
-    this.queue = new Bottleneck({
-      maxConcurrent: this.options.maxConcurrency,
-      minTime: this.options.minRequestTime,
+    this.queue = new RateLimitedQueue({
+      maxInProgress: this.options.maxConcurrency,
+      // TODO: maxPerInterval
     })
-
-    this.queue.on('failed', (error, info) => handleFailed(this.options, error, info.retryCount))
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
@@ -41,7 +39,19 @@ export class HardenedFetch {
       init = Object.assign({}, init, { headers })
     }
 
-    return this.queue.schedule(makeRequest, resolvedUrl, init, timeout)
+    const operation = () => {
+      console.log('makeRequest')
+      return makeRequest(resolvedUrl, init, timeout)
+    }
+
+    const canRetry = (error: unknown, executions: number) => {
+      console.log('canRetry', executions)
+      return handleFailed(this.options, error, executions)
+    }
+
+    const opWithRetry = withRetry(operation, canRetry)
+
+    return this.queue.schedule(opWithRetry)
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {

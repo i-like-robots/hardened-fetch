@@ -35,13 +35,15 @@ describe('Hardened Fetch', () => {
 
       const instance = new HardenedFetch()
 
-      instance.fetch('http://www.example.com/')
+      instance.queue.pause()
 
-      assert.equal(instance.queue.jobs().length, 1)
+      const promise = instance.fetch('http://www.example.com/')
 
-      await new Promise((resolve) => {
-        instance.queue.on('done', resolve)
-      })
+      assert.equal(instance.queue.pending, 1)
+
+      instance.queue.resume()
+
+      await promise
     })
 
     it('resolves with the Response object', async () => {
@@ -54,9 +56,10 @@ describe('Hardened Fetch', () => {
     })
 
     it('rejects with a HTTP error on failure', async () => {
-      mockClient.intercept({ path: '/' }).reply(404)
+      mockClient.intercept({ path: '/' }).reply(404, 'Not Found')
 
       const instance = new HardenedFetch()
+
       await assert.rejects(() => instance.fetch('http://www.example.com/'), /HTTP error: 404/)
     })
 
