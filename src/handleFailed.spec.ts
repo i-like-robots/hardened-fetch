@@ -1,13 +1,9 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { handleFailed } from './handleFailed.js'
-import type { Options } from './options.js'
+import { handleFailed, type Options } from './handleFailed.js'
 import { HTTPError } from './errors.js'
 
 const options: Options = {
-  // Throttle options
-  maxConcurrency: 0,
-  minRequestTime: 100,
   // Retry options
   maxRetries: 3,
   doNotRetry: [404],

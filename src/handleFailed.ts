@@ -1,6 +1,8 @@
 import { getResetHeader } from './utils.js'
-import type { Options } from './options.d.ts'
 import { HTTPError } from './errors.js'
+import type { RateLimitOptions, RetryOptions } from './options.d.ts'
+
+export interface Options extends RetryOptions, RateLimitOptions {}
 
 const backoff = (retries: number) => Math.pow(retries + 1, 2) * 1000
 

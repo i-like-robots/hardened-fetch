@@ -1,4 +1,4 @@
-// import type { Options as RateLimitedQueueOptions } from 'simple-rate-limited-queue'
+import type { Options as RateLimitedQueueOptions } from 'simple-rate-limited-queue'
 
 export type RateLimitHeader =
   | 'Retry-After'
@@ -28,13 +28,7 @@ export interface RequestOptions {
   // TODO: defaultTimeout?: number
 }
 
-export interface ThrottleOptions {
-  /** How many requests can be running at the same time. */
-  maxConcurrency: number
-  /** How long to wait after launching a request before launching another one. */
-  minRequestTime: number
-}
-// TODO export interface ThrottleOptions extends RateLimitedQueueOptions {}
+export interface ThrottleOptions extends RateLimitedQueueOptions {}
 
 export interface RetryOptions {
   /** Number of retry attempts for failed requests. */

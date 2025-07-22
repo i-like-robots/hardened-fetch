@@ -46,8 +46,9 @@ Constructor Options:
 | ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `baseUrl`         | `string`      | A base URL to prepend to each request, optional.                                                                         |
 | `defaultHeaders`  | `HeadersInit` | Default headers to add to each request, optional.                                                                        |
-| `maxConcurrency`  | `number`      | How many requests can be running at the same time.                                                                       |
-| `minRequestTime`  | `number`      | How long to wait after launching a request before launching another one.                                                 |
+| `maxInProgress`   | `number`      | The maximum number of requests to execute per time interval.                                                             |
+| `maxPerInterval`  | `number`      | The maximum number of concurrent requests in progress.                                                                   |
+| `intervalLength`  | `number`      | The length of each time interval in milliseconds.                                                                        |
 | `maxRetries`      | `number`      | Number of retry attempts for failed requests.                                                                            |
 | `doNotRetry`      | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
 | `rateLimitHeader` | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
@@ -61,8 +62,9 @@ const client = new HardenedFetch({
   baseUrl: undefined,
   defaultHeaders: undefined,
   // Throttle options
-  maxConcurrency: 10,
-  minRequestTime: 0,
+  maxInProgress: 20,
+  maxPerInterval: 10,
+  intervalLength: 1_000,
   // Retry options
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
@@ -74,7 +76,7 @@ const client = new HardenedFetch({
 
 ### `client.fetch(url, [init] = {}, [timeout] = 30000)`
 
-Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
+Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with an `HTTPError` for non-20x responses.
 
 ```js
 const response = await client.fetch('https://swapi.dev/api/species/1/')

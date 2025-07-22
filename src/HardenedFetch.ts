@@ -7,8 +7,9 @@ import { RateLimitedQueue, withRetry } from 'simple-rate-limited-queue'
 
 const defaults: Options = {
   // Throttle options
-  maxConcurrency: 10,
-  minRequestTime: 0,
+  maxInProgress: Infinity,
+  maxPerInterval: 10,
+  intervalLength: 1_000,
   // Retry options
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
@@ -26,8 +27,9 @@ export class HardenedFetch {
     this.options = Object.assign({}, defaults, options)
 
     this.queue = new RateLimitedQueue({
-      maxInProgress: this.options.maxConcurrency,
-      // TODO: maxPerInterval
+      maxInProgress: this.options.maxInProgress,
+      maxPerInterval: this.options.maxPerInterval,
+      intervalLength: this.options.intervalLength,
     })
   }
 
@@ -40,12 +42,10 @@ export class HardenedFetch {
     }
 
     const operation = () => {
-      console.log('makeRequest')
       return makeRequest(resolvedUrl, init, timeout)
     }
 
     const canRetry = (error: unknown, executions: number) => {
-      console.log('canRetry', executions)
       return handleFailed(this.options, error, executions)
     }
 
