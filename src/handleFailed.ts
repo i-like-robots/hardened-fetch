@@ -13,7 +13,11 @@ export function handleFailed(options: Options, error: unknown, retries: number):
 
   if (error instanceof Error) {
     if (error instanceof HTTPError) {
-      if (options.doNotRetry?.includes(error.response.status)) {
+      if (options.doNotRetryMethods.includes(error.request.method)) {
+        return
+      }
+
+      if (options.doNotRetry.includes(error.response.status)) {
         return
       }
 

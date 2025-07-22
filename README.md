@@ -42,17 +42,18 @@ Creates a new Hardened Fetch client.
 
 Constructor Options:
 
-| Name              | Type          | Description                                                                                                              |
-| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `baseUrl`         | `string`      | A base URL to prepend to each request, optional.                                                                         |
-| `defaultHeaders`  | `HeadersInit` | Default headers to add to each request, optional.                                                                        |
-| `maxInProgress`   | `number`      | The maximum number of requests to execute per time interval.                                                             |
-| `maxPerInterval`  | `number`      | The maximum number of concurrent requests in progress.                                                                   |
-| `intervalLength`  | `number`      | The length of each time interval in milliseconds.                                                                        |
-| `maxRetries`      | `number`      | Number of retry attempts for failed requests.                                                                            |
-| `doNotRetry`      | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
-| `rateLimitHeader` | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
-| `resetFormat`     | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
+| Name                | Type          | Description                                                                                                              |
+| ------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `baseUrl`           | `string`      | A base URL to prepend to each request, optional.                                                                         |
+| `defaultHeaders`    | `HeadersInit` | Default headers to add to each request, optional.                                                                        |
+| `maxInProgress`     | `number`      | The maximum number of requests to execute per time interval.                                                             |
+| `maxPerInterval`    | `number`      | The maximum number of concurrent requests in progress.                                                                   |
+| `intervalLength`    | `number`      | The length of each time interval in milliseconds.                                                                        |
+| `maxRetries`        | `number`      | Number of retry attempts for failed requests.                                                                            |
+| `doNotRetryMethods` | `string[]`    | List of HTTP methods that will not trigger a retry attempt.                                                              |
+| `doNotRetry`        | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
+| `rateLimitHeader`   | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
+| `resetFormat`       | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
 
 All of the options and their defaults are shown below:
 
@@ -68,6 +69,7 @@ const client = new HardenedFetch({
   // Retry options
   maxRetries: 3,
   doNotRetry: [400, 401, 403, 404, 422, 451],
+  doNotRetryMethods: ['CONNECT', 'DELETE', 'PATCH', 'POST', 'PUT'],
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',

@@ -19,6 +19,7 @@ export type HTTPMethods =
   | 'POST'
   | 'PUT'
   | 'TRACE'
+  | string
 
 export interface RequestOptions {
   /** A base URL to prepend to each request. */
@@ -33,9 +34,10 @@ export interface ThrottleOptions extends RateLimitedQueueOptions {}
 export interface RetryOptions {
   /** Number of retry attempts for failed requests. */
   maxRetries: number
+  /** List of HTTP methods that will not trigger a retry attempt. */
+  doNotRetryMethods: HTTPMethods[]
   /** List of HTTP status codes that will not trigger a retry attempt. */
   doNotRetry: number[]
-  // TODO: doNotRetryMethods: HTTPMethods[]
 }
 
 export interface RateLimitOptions {

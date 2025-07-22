@@ -6,14 +6,15 @@ import { HTTPError } from './errors.js'
 const options: Options = {
   // Retry options
   maxRetries: 3,
+  doNotRetryMethods: ['POST', 'PUT'],
   doNotRetry: [404],
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',
 }
 
-const createError = (status: number, headers = {}) => {
-  const request = new Request('http://www.example.com')
+const createError = (status: number, headers = {}, method = 'GET') => {
+  const request = new Request('http://www.example.com', { method })
   const response = new Response(null, { status, headers })
 
   return new HTTPError(request, response)
@@ -57,6 +58,14 @@ describe('Handle Failed', () => {
     describe('when response status is flagged as do not retry', () => {
       it('returns nothing', () => {
         const error = createError(404)
+
+        assert.equal(handleFailed(options, error, 3), undefined)
+      })
+    })
+
+    describe('when request method is flagged as do not retry', () => {
+      it('returns nothing', () => {
+        const error = createError(500, {}, 'PUT')
 
         assert.equal(handleFailed(options, error, 3), undefined)
       })
