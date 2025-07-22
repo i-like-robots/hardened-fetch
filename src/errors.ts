@@ -1,13 +1,3 @@
-export class NetworkError extends Error {
-  code: string
-
-  constructor(error: Error, code: string) {
-    super(`Network error: ${error.message}`)
-    this.name = 'NetworkError'
-    this.code = code
-  }
-}
-
 export class HTTPError extends Error {
   code: number
   request: Request
