@@ -51,7 +51,7 @@ Constructor Options:
 | `intervalLength`    | `number`      | The length of each time interval in milliseconds.                                                                        |
 | `maxRetries`        | `number`      | Number of retry attempts for failed requests.                                                                            |
 | `doNotRetryMethods` | `string[]`    | List of HTTP methods that will not trigger a retry attempt.                                                              |
-| `doNotRetry`        | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
+| `doNotRetryCodes`   | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                                         |
 | `rateLimitHeader`   | `string`      | The name of the rate limit reset header, usually one of `"Retry-After"`, `"X-RateLimit-Reset"`, or`"X-Rate-Limit-Reset"` |
 | `resetFormat`       | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`.                 |
 
@@ -68,7 +68,7 @@ const client = new HardenedFetch({
   intervalLength: 1_000,
   // Retry options
   maxRetries: 3,
-  doNotRetry: [400, 401, 403, 404, 422, 451],
+  doNotRetryCodes: [400, 401, 403, 404, 422, 451],
   doNotRetryMethods: ['CONNECT', 'DELETE', 'PATCH', 'POST', 'PUT'],
   // Rate limit options
   rateLimitHeader: 'Retry-After',

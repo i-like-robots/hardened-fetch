@@ -13,7 +13,7 @@ const defaults: Options = {
   // Retry options
   maxRetries: 3,
   doNotRetryMethods: ['CONNECT', 'DELETE', 'PATCH', 'POST', 'PUT'],
-  doNotRetry: [400, 401, 403, 404, 422, 451],
+  doNotRetryCodes: [400, 401, 403, 404, 422, 451],
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',
@@ -35,7 +35,9 @@ export class HardenedFetch {
   }
 
   fetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    const resolvedUrl = joinBaseUrl(url, this.options.baseUrl)
+    if (this.options.baseUrl) {
+      url = joinBaseUrl(url, this.options.baseUrl)
+    }
 
     if (this.options.defaultHeaders) {
       const headers = Object.assign({}, this.options.defaultHeaders, init.headers)
@@ -43,16 +45,14 @@ export class HardenedFetch {
     }
 
     const operation = () => {
-      return makeRequest(resolvedUrl, init, timeout)
+      return makeRequest(url, init, timeout)
     }
 
     const canRetry = (error: unknown, executions: number) => {
       return handleFailed(this.options, error, executions)
     }
 
-    const opWithRetry = withRetry(operation, canRetry)
-
-    return this.queue.schedule(opWithRetry)
+    return this.queue.schedule(withRetry(operation, canRetry))
   }
 
   async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {

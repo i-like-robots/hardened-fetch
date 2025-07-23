@@ -26,7 +26,7 @@ export function handleFailed(options: Options, error: unknown, retries: number):
       return
     }
 
-    if (options.doNotRetry.includes(error.response.status)) {
+    if (options.doNotRetryCodes.includes(error.response.status)) {
       return
     }
 

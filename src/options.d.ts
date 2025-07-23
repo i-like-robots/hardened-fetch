@@ -37,7 +37,7 @@ export interface RetryOptions {
   /** List of HTTP methods that will not trigger a retry attempt. */
   doNotRetryMethods: HTTPMethods[]
   /** List of HTTP status codes that will not trigger a retry attempt. */
-  doNotRetry: number[]
+  doNotRetryCodes: number[]
 }
 
 export interface RateLimitOptions {
