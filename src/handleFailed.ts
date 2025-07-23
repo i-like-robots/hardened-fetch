@@ -1,6 +1,6 @@
-import { getResetHeader } from './utils.js'
 import { HTTPError } from './errors.js'
 import type { RateLimitOptions, RetryOptions } from './options.d.ts'
+import { parseResetHeader } from './utils/parseResetHeader.js'
 
 export interface Options extends RetryOptions, RateLimitOptions {}
 
@@ -32,12 +32,11 @@ export function handleFailed(options: Options, error: unknown, retries: number):
 
     // Rate limit reached
     if (error.response.status === 429) {
-      const wait = getResetHeader(error.response, options.rateLimitHeader, options.resetFormat)
+      const reset = error.response.headers.get(options.rateLimitHeader)
+      const wait = parseResetHeader(reset, Date.now(), options.resetFormat)
 
-      if (wait) {
-        // Add extra 1 second to account for sub second differences
-        return wait + 1000
-      }
+      // Add extra 1 second to account for sub second differences
+      if (wait) return wait + 1000
     }
 
     return backoff(retries)
