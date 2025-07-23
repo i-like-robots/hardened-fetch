@@ -13,7 +13,7 @@ const defaults: Options = {
   // Retry options
   maxRetries: 3,
   doNotRetryMethods: ['CONNECT', 'DELETE', 'PATCH', 'POST', 'PUT'],
-  doNotRetryCodes: [400, 401, 403, 404, 422, 451],
+  doNotRetryCodes: [400, 401, 403, 404, 405, 406, 410, 411, 412, 422, 451, 501],
   // Rate limit options
   rateLimitHeader: 'Retry-After',
   resetFormat: 'seconds',

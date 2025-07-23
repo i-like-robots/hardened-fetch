@@ -1,7 +1,7 @@
 {
   "name": "hardened-fetch",
   "version": "1.2.3",
-  "description": "Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries with backoff and rate limit support, pagination, and descriptive errors.",
+  "description": "Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries, pagination, and descriptive errors.",
   "keywords": [
     "fetch",
     "request",
