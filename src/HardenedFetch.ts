@@ -1,9 +1,9 @@
 import { parseLinkHeader } from '@web3-storage/parse-link-header'
+import { RateLimitedQueue, withRetry } from 'simple-rate-limited-queue'
+import { joinBaseUrl } from './utils/joinBaseUrl.js'
 import { handleFailed } from './handleFailed.js'
 import { makeRequest } from './makeRequest.js'
-import { joinBaseUrl } from './utils.js'
 import type { Options } from './options.d.ts'
-import { RateLimitedQueue, withRetry } from 'simple-rate-limited-queue'
 
 const defaults: Options = {
   // Throttle options
