@@ -2,6 +2,7 @@
 
 ## v2.0.0
 
+- Node v20 is now the minimum supported version
 - Remove `.paginatedFetch()` method as there are too many variants to reasonably support
 - Renamed `doNotRetry` option to `doNotRetryCodes` to differentiate from new options
 - Added support for `doNotRetryMethods` to skip retrying specific request methods
