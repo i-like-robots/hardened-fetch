@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/i-like-robots/hardened-fetch/blob/main/LICENSE) ![build status](https://github.com/i-like-robots/hardened-fetch/actions/workflows/test.yml/badge.svg?branch=main) [![npm version](https://img.shields.io/npm/v/hardened-fetch.svg?style=flat)](https://www.npmjs.com/package/hardened-fetch)
 
-Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, throttling, rate limiting, retries, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
+Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, throttling, rate limit awareness, retries, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
 
 ```js
 import { HardenedFetch } from 'hardened-fetch'
@@ -76,9 +76,9 @@ const client = new HardenedFetch({
 })
 ```
 
-### `client.fetch(url, [init={}], [timeout=30000])`
+### `client.fetch(url, [init={}], [timeout=30_000])`
 
-Expects a `url` to the resource that you wish to fetch and optionally [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with an `HTTPError` for non-20x responses.
+Expects a `url` to the resource that you wish to fetch, optionally [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful or rejects with an `HTTPError` for non-20x responses.
 
 ```js
 const response = await client.fetch('https://swapi.dev/api/species/1/')

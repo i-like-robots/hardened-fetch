@@ -5,10 +5,10 @@
 - Node v20 is now the minimum supported version
 - Remove `.paginatedFetch()` method as there are too many variants to reasonably support
 - Renamed `doNotRetry` option to `doNotRetryCodes` to differentiate from new options
-- Added support for `doNotRetryMethods` to skip retrying specific request methods
-- Added support for abort signal/s passed via `.fetch()` options 
-- Added support for retrying some, possibly temporary, network errors
-- Switched `bottleneck` dependency to `simple-rate-limited-queue` as bottleneck is not maintained
+- Added `doNotRetryMethods` option to skip retrying specific request methods
+- Added support for combining abort signals passed via `.fetch()` options 
+- Added support for retrying some, possibly temporary, network errors (e.g. `ECONNRESET`)
+- Switched `bottleneck` dependency to `simple-rate-limited-queue` as Bottleneck is not maintained
 - Refactored options to support `simple-rate-limited-queue`
 
 ## v1.2.3
