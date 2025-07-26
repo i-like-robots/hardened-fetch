@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.0.0
+
+- Remove `.paginatedFetch()` method as there are too many variants to reasonably support
+- Renamed `doNotRetry` option to `doNotRetryCodes` to differentiate from new options
+- Added support for `doNotRetryMethods` to skip retrying specific request methods
+- Added support for abort signal/s passed via `.fetch()` options 
+- Added support for retrying some, possibly temporary, network errors
+- Switched `bottleneck` dependency to `simple-rate-limited-queue` as bottleneck is not maintained
+- Refactored options to support `simple-rate-limited-queue`
+
 ## v1.2.3
 
 - Refactored URL joining to allow path on `baseUrl` option
