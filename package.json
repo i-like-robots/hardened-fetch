@@ -1,7 +1,7 @@
 {
   "name": "hardened-fetch",
   "version": "1.2.3",
-  "description": "Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries, pagination, and descriptive errors.",
+  "description": "Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, throttling, rate limiting, retries, and descriptive errors.",
   "keywords": [
     "fetch",
     "request",
@@ -46,7 +46,6 @@
   },
   "homepage": "https://github.com/i-like-robots/hardened-fetch",
   "dependencies": {
-    "@web3-storage/parse-link-header": "^3.1.0",
     "simple-rate-limited-queue": "^1.2.0"
   },
   "devDependencies": {

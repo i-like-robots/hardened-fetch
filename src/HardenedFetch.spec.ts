@@ -83,44 +83,4 @@ describe('Hardened Fetch', () => {
       assert.ok(response.ok)
     })
   })
-
-  describe('.paginatedFetch()', () => {
-    it('returns an async iterator', async () => {
-      mockClient.intercept({ path: '/1' }).reply(200, 'OK', {
-        headers: { link: '<http://www.example.com/2>; rel="next"' },
-      })
-      mockClient.intercept({ path: '/2' }).reply(200, 'OK', {
-        headers: { link: '<http://www.example.com/3>; rel="next"' },
-      })
-      mockClient.intercept({ path: '/3' }).reply(200, 'OK')
-
-      const instance = new HardenedFetch()
-
-      const pages = instance.paginatedFetch('http://www.example.com/1')
-
-      const responses: boolean[] = []
-
-      for await (const { response, done } of pages) {
-        assert.ok(response instanceof Response)
-        responses.push(done)
-      }
-
-      assert.deepEqual(responses, [false, false, true])
-    })
-
-    it('rejects with an HTTP error on failure', async () => {
-      mockClient.intercept({ path: '/1' }).reply(200, 'OK', {
-        headers: { link: '<http://www.example.com/2>; rel="next"' },
-      })
-      mockClient.intercept({ path: '/2' }).reply(404, 'Not Found')
-
-      const instance = new HardenedFetch()
-
-      const pages = instance.paginatedFetch('http://www.example.com/1')
-
-      await pages.next()
-
-      await assert.rejects(() => pages.next(), /HTTP error: 404/)
-    })
-  })
 })

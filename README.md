@@ -2,13 +2,14 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/i-like-robots/hardened-fetch/blob/main/LICENSE) ![build status](https://github.com/i-like-robots/hardened-fetch/actions/workflows/test.yml/badge.svg?branch=main) [![npm version](https://img.shields.io/npm/v/hardened-fetch.svg?style=flat)](https://www.npmjs.com/package/hardened-fetch)
 
-Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, request throttling, retries, pagination, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
+Hardened Fetch is a tiny wrapper for `global.fetch` adding request timeouts, throttling, rate limiting, retries, and descriptive errors. It makes working with APIs without SDKs and web scraping easier.
 
 ```js
 import { HardenedFetch } from 'hardened-fetch'
 
 const client = new HardenedFetch({
   baseUrl: 'https://swapi.dev/api/',
+  maxRetries: 3,
 })
 
 const response = await client.fetch('/species/1/')
@@ -32,7 +33,6 @@ $ npm install hardened-fetch
 - Retries failed requests with exponential back off
 - Retries rate-limited requests according to reset time
 - Supports request timeouts and multiple abort controllers
-- Easily step-through paginated API responses
 
 ## API
 
@@ -76,29 +76,13 @@ const client = new HardenedFetch({
 })
 ```
 
-### `client.fetch(url, [init] = {}, [timeout] = 30000)`
+### `client.fetch(url, [init={}], [timeout=30000])`
 
-Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with an `HTTPError` for non-20x responses.
+Expects a `url` to the resource that you wish to fetch and optionally [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns a promise which will resolve with the [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object when successful. Rejects with an `HTTPError` for non-20x responses.
 
 ```js
 const response = await client.fetch('https://swapi.dev/api/species/1/')
 const json = await response.json()
-```
-
-### `client.paginatedFetch(url, [options] = {}, [timeout] = 30000)`
-
-Expects a `url` to the resource that you wish to fetch and optionally custom [settings](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) to apply to the request, and a timeout in milliseconds. Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) which will resolve with a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object and `done` property on each successful iteration. Rejects with a relevant [HTTP error](https://www.npmjs.com/package/http-errors) on failure.
-
-```js
-const pages = client.paginatedFetch('https://swapi.dev/api/species')
-
-for await (const { response, done } of pages) {
-  const json = await response.json()
-
-  if (done) {
-    console.log('Done!')
-  }
-}
 ```
 
 ## License

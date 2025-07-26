@@ -1,4 +1,3 @@
-import { parseLinkHeader } from '@web3-storage/parse-link-header'
 import { RateLimitedQueue, withRetry } from 'simple-rate-limited-queue'
 import { joinBaseUrl } from './utils/joinBaseUrl.js'
 import { handleFailed } from './handleFailed.js'
@@ -53,20 +52,5 @@ export class HardenedFetch {
     }
 
     return this.queue.schedule(withRetry(operation, canRetry))
-  }
-
-  async *paginatedFetch(url: string, init: RequestInit = {}, timeout: number = 30_000) {
-    let nextUrl: string | null = url
-
-    while (nextUrl) {
-      const response = await this.fetch(nextUrl, init, timeout)
-
-      const linkHeader = response.headers.get('Link')
-      const links = parseLinkHeader(linkHeader)
-
-      nextUrl = links?.next ? links.next.url : null
-
-      yield { response, done: !nextUrl }
-    }
   }
 }
