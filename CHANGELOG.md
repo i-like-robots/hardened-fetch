@@ -10,6 +10,7 @@
 - Added support for retrying some, possibly temporary, network errors (e.g. `ECONNRESET`)
 - Switched `bottleneck` dependency to `simple-rate-limited-queue` as Bottleneck is not maintained
 - Refactored options to support `simple-rate-limited-queue`
+- Refactored `rateLimitHeader` to `rateLimitHeaders` to support an array of names
 
 ## v1.2.3
 

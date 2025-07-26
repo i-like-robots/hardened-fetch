@@ -9,7 +9,7 @@ const options: Options = {
   doNotRetryMethods: ['POST'],
   doNotRetryCodes: [404],
   // Rate limit options
-  rateLimitHeader: 'Retry-After',
+  rateLimitHeaders: ['Retry-After'],
   resetFormat: 'seconds',
 }
 

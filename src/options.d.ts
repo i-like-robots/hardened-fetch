@@ -41,8 +41,8 @@ export interface RetryOptions {
 }
 
 export interface RateLimitOptions {
-  /** The name of the rate limit reset header */
-  rateLimitHeader: RateLimitHeader
+  /** The names of the rate limit reset headers to lookup */
+  rateLimitHeaders: RateLimitHeader[]
   /** The format of the rate limit reset header */
   resetFormat: ResetFormat
 }
