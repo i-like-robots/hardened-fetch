@@ -15,7 +15,6 @@ const defaults: Options = {
   doNotRetryCodes: [400, 401, 403, 404, 405, 406, 410, 411, 412, 422, 451, 501],
   // Rate limit options
   rateLimitHeaders: ['Retry-After', 'RateLimit-Reset', 'X-RateLimit-Reset', 'X-Rate-Limit-Reset'],
-  resetFormat: 'seconds',
 }
 
 export class HardenedFetch {

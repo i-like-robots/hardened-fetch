@@ -10,7 +10,6 @@ const options: Options = {
   doNotRetryCodes: [404],
   // Rate limit options
   rateLimitHeaders: ['Retry-After'],
-  resetFormat: 'seconds',
 }
 
 const createHttpError = (status: number, headers = {}, method = 'GET') => {
@@ -32,7 +31,7 @@ const createTimeoutError = () => {
 }
 
 const createNetworkError = (code: string) => {
-  class NetworkError extends Error {
+  class NetworkError extends TypeError {
     public code: string
 
     constructor(code) {

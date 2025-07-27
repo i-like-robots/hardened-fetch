@@ -7,8 +7,6 @@ export type RateLimitHeader =
   | 'X-Rate-Limit-Reset'
   | string
 
-export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
-
 export type HTTPMethods =
   | 'CONNECT'
   | 'DELETE'
@@ -43,8 +41,6 @@ export interface RetryOptions {
 export interface RateLimitOptions {
   /** The names of the rate limit reset headers to lookup */
   rateLimitHeaders: RateLimitHeader[]
-  /** The format of the rate limit reset header */
-  resetFormat: ResetFormat
 }
 
 export interface Options extends RequestOptions, ThrottleOptions, RetryOptions, RateLimitOptions {}

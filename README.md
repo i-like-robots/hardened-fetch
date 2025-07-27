@@ -53,7 +53,6 @@ Constructor Options:
 | `doNotRetryMethods` | `string[]`    | List of HTTP methods that will not trigger a retry attempt.                                              |
 | `doNotRetryCodes`   | `number[]`    | List of HTTP status codes that will not trigger a retry attempt.                                         |
 | `rateLimitHeaders`  | `string[]`    | The names of the rate limit reset headers to lookup.                                                     |
-| `resetFormat`       | `string`      | The format of the rate limit reset header, must be one of `"datetime"`, `"seconds"` or `"milliseconds"`. |
 
 All of the options and their defaults are shown below:
 
@@ -72,7 +71,6 @@ const client = new HardenedFetch({
   doNotRetryMethods: ['CONNECT', 'DELETE', 'PATCH', 'POST', 'PUT'],
   // Rate limit options
   rateLimitHeaders: ['Retry-After', 'RateLimit-Reset', 'X-RateLimit-Reset', 'X-Rate-Limit-Reset'],
-  resetFormat: 'seconds',
 })
 ```
 

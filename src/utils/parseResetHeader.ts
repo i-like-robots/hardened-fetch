@@ -1,34 +1,28 @@
-import type { ResetFormat } from '../options'
-
 const ONE_YEAR = 1000 * 60 * 60 * 24 * 365
 
-export function parseResetHeader(
-  value: unknown,
-  timestamp: number,
-  format: ResetFormat = 'seconds'
-) {
-  if (typeof value === 'string') {
-    let parsed: number
+const DATE_STRING = /^20[0-9]{2}-[0-1][0-9]-[0-3][0-9]/
 
-    switch (format) {
-      case 'datetime':
-        parsed = Date.parse(value)
-        break
-      case 'seconds':
-        parsed = parseInt(value, 10) * 1000
-        break
-      case 'milliseconds':
-        parsed = parseInt(value, 10)
-        break
+const SECONDS = /^\d+/
+
+export function parseResetHeader(value: string, timestamp: number) {
+  let parsed: number | void = undefined
+
+  if (DATE_STRING.test(value)) {
+    parsed = Date.parse(value)
+  }
+
+  if (SECONDS.test(value)) {
+    parsed = parseInt(value, 10)
+  }
+
+  if (parsed && !isNaN(parsed)) {
+    const ms = parsed * 1000
+
+    // Assume it's a unix timestamp if > 1 year
+    if (parsed > ONE_YEAR) {
+      return ms - timestamp
     }
 
-    if (isNaN(parsed) === false) {
-      // Assume it's a timestamp if > 1 year
-      if (parsed > ONE_YEAR) {
-        return parsed - timestamp
-      }
-
-      return parsed
-    }
+    return ms
   }
 }
