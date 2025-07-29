@@ -21,10 +21,28 @@ describe('.parseResetHeader()', () => {
     })
   })
 
-  describe('when given an delta in seconds', () => {
+  describe('when given a timestamp in milliseconds', () => {
+    it('returns a delta in milliseconds', () => {
+      const date = new Date('2025-07-21T21:37:00.000Z')
+      const retry = `${date.getTime() + 30_000}`
+
+      assert.equal(parseResetHeader(retry, date.getTime()), 30_000)
+    })
+  })
+
+  describe('when given a delta in seconds', () => {
     it('returns a delta in milliseconds', () => {
       const date = Date.now()
       const retry = '30'
+
+      assert.equal(parseResetHeader(retry, date), 30_000)
+    })
+  })
+
+  describe('when given a delta in milliseconds', () => {
+    it('returns a delta in milliseconds', () => {
+      const date = Date.now()
+      const retry = '30000'
 
       assert.equal(parseResetHeader(retry, date), 30_000)
     })
