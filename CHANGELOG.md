@@ -4,14 +4,14 @@
 
 - Node v20 is now the minimum supported version
 - Removed `.paginatedFetch()` method as there are too many variants to reasonably support
-- Removed `resetFormat` option as this will now detect date strings vs timestamps in seconds
+- Removed `resetFormat` option as the library will now detect date strings/timestamps/deltas in seconds or milliseconds
 - Renamed `doNotRetry` option to `doNotRetryCodes` to differentiate from new options
 - Added `doNotRetryMethods` option to skip retrying specific request methods
 - Added support for combining abort signals passed via `.fetch()` options
 - Added support for retrying some, possibly temporary, network errors (e.g. `ECONNRESET`)
-- Switched `bottleneck` dependency to `simple-rate-limited-queue` as Bottleneck is not maintained
-- Refactored options to support `simple-rate-limited-queue`
-- Refactored `rateLimitHeader` to `rateLimitHeaders` to support an array of names
+- Switched `bottleneck` dependency to `simple-rate-limited-queue` as Bottleneck has not been maintained for several years
+- Refactored options to support new `simple-rate-limited-queue` dependency
+- Refactored `rateLimitHeader` to `rateLimitHeaders` to support multiple names
 
 ## v1.2.3
 
