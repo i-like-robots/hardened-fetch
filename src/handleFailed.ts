@@ -34,10 +34,13 @@ export function handleFailed(options: Options, error: unknown, retries: number):
     // Rate limit reached
     if (error.response.status === 429) {
       const header = findHeader(error.response.headers, options.rateLimitHeaders)
-      const wait = header ? parseResetHeader(header, Date.now()) : null
 
-      // Add extra 1 second to account for sub second differences
-      if (typeof wait === 'number') return wait + 1000
+      if (header) {
+        const wait = parseResetHeader(header, Date.now())
+
+        // Add extra 1 second to account for sub second differences
+        if (typeof wait === 'number') return wait + 1000
+      }
     }
 
     return backoff(retries)
