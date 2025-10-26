@@ -32,7 +32,7 @@ describe('Make Request', () => {
     it('rejects with an HTTP error', async () => {
       mockClient.intercept({ path: '/404' }).reply(404, 'Not Found')
 
-      await assert.rejects(() => makeRequest('http://example.com/404'), /NotFound/)
+      await assert.rejects(() => makeRequest('http://example.com/404'), /HTTP error: 404/)
     })
 
     it('appends request and response to the error', async () => {
@@ -52,6 +52,22 @@ describe('Make Request', () => {
       mockClient.intercept({ path: '/timeout' }).reply(200, 'OK').delay(200)
 
       await assert.rejects(() => makeRequest('http://example.com/timeout', {}, 100), /TimeoutError/)
+    })
+  })
+
+  describe('Request aborted', () => {
+    it('throws when abort signal is called', async () => {
+      mockClient.intercept({ path: '/abort' }).reply(200, 'OK').delay(1000)
+
+      const controller = new AbortController()
+
+      const init: RequestInit = {
+        signal: controller.signal,
+      }
+
+      setTimeout(() => controller.abort(), 100)
+
+      await assert.rejects(() => makeRequest('http://example.com/abort', init), /AbortError/)
     })
   })
 })

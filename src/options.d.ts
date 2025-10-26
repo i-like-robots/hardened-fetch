@@ -1,3 +1,5 @@
+import type { Options as RateLimitedQueueOptions } from 'simple-rate-limited-queue'
+
 export type RateLimitHeader =
   | 'Retry-After'
   | 'RateLimit-Reset'
@@ -5,34 +7,40 @@ export type RateLimitHeader =
   | 'X-Rate-Limit-Reset'
   | string
 
-export type ResetFormat = 'datetime' | 'seconds' | 'milliseconds'
+export type HTTPMethods =
+  | 'CONNECT'
+  | 'DELETE'
+  | 'GET'
+  | 'HEAD'
+  | 'OPTIONS'
+  | 'PATCH'
+  | 'POST'
+  | 'PUT'
+  | 'TRACE'
+  | string
 
-export type RequestOptions = {
+export interface RequestOptions {
   /** A base URL to prepend to each request. */
   baseUrl?: string
   /** Default headers to add to each request. */
   defaultHeaders?: RequestInit['headers']
+  // TODO: defaultTimeout?: number
 }
 
-export type ThrottleOptions = {
-  /** How many requests can be running at the same time. */
-  maxConcurrency: number
-  /** How long to wait after launching a request before launching another one. */
-  minRequestTime: number
-}
+export interface ThrottleOptions extends RateLimitedQueueOptions {}
 
-export type RetryOptions = {
+export interface RetryOptions {
   /** Number of retry attempts for failed requests. */
   maxRetries: number
+  /** List of HTTP methods that will not trigger a retry attempt. */
+  doNotRetryMethods: HTTPMethods[]
   /** List of HTTP status codes that will not trigger a retry attempt. */
-  doNotRetry: number[]
+  doNotRetryCodes: number[]
 }
 
-export type RateLimitOptions = {
-  /** The name of the rate limit reset header */
-  rateLimitHeader: RateLimitHeader
-  /** The format of the rate limit reset header */
-  resetFormat: ResetFormat
+export interface RateLimitOptions {
+  /** The names of the rate limit reset headers to lookup */
+  rateLimitHeaders: RateLimitHeader[]
 }
 
-export type Options = RequestOptions & ThrottleOptions & RetryOptions & RateLimitOptions
+export interface Options extends RequestOptions, ThrottleOptions, RetryOptions, RateLimitOptions {}

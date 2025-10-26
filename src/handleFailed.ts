@@ -1,32 +1,60 @@
-import { getResetHeader } from './utils.js'
-import { isHttpError } from 'http-errors'
-import type { Options } from './options.d.ts'
+import { HTTPError } from './errors.js'
+import type { RateLimitOptions, RetryOptions } from './options.d.ts'
+import { findHeader } from './utils/findHeader.js'
+import { parseResetHeader } from './utils/parseResetHeader.js'
+
+export interface Options extends RetryOptions, RateLimitOptions {}
+
+// Retry errors which could be due to temporary network issues
+const NETWORK_ERROR_CODES = new Set([
+  'EAI_AGAIN',
+  'ECONNABORTED',
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'ENETUNREACH',
+  'ETIMEDOUT',
+])
 
 const backoff = (retries: number) => Math.pow(retries + 1, 2) * 1000
 
-export function handleFailed(options: Options, error: Error, retries: number): number | void {
+export function handleFailed(options: Options, error: unknown, retries: number): number | void {
   if (retries >= options.maxRetries) {
     return
   }
 
-  if (isHttpError(error) && error?.response instanceof Response) {
-    if (options.doNotRetry?.includes(error.status)) {
+  if (error instanceof HTTPError) {
+    if (options.doNotRetryMethods.includes(error.request.method)) {
       return
     }
 
-    if (error.status === 429) {
-      const wait = getResetHeader(error.response, options.rateLimitHeader, options.resetFormat)
+    if (options.doNotRetryCodes.includes(error.response.status)) {
+      return
+    }
 
-      if (wait) {
+    // Rate limit reached
+    if (error.response.status === 429) {
+      const header = findHeader(error.response.headers, options.rateLimitHeaders)
+
+      if (header) {
+        const wait = parseResetHeader(header, Date.now())
+
         // Add extra 1 second to account for sub second differences
-        return wait + 1000
+        if (typeof wait === 'number') return wait + 1000
       }
     }
 
     return backoff(retries)
   }
 
-  if (error.name === 'TimeoutError') {
-    return backoff(retries)
+  if (error instanceof Error) {
+    // Errors thrown by AbortSignal timeout
+    if (error.name === 'TimeoutError') {
+      return backoff(retries)
+    }
+
+    // Errors thrown due to network, TCP or DNS problems
+    if ('code' in error && typeof error.code === 'string' && NETWORK_ERROR_CODES.has(error.code)) {
+      return backoff(retries)
+    }
   }
 }

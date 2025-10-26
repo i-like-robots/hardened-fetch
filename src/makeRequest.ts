@@ -1,17 +1,22 @@
-import createHttpError from 'http-errors'
+import { HTTPError } from './errors'
 
 export async function makeRequest(
   url: string | URL,
   init: RequestInit = {},
   timeout = 30_000
 ): Promise<Response> {
-  const signal = AbortSignal.timeout(timeout)
-  const request = new Request(url, { ...init, signal })
+  const signals = [AbortSignal.timeout(timeout)]
+
+  if ('signal' in init && init.signal instanceof AbortSignal) {
+    signals.push(init.signal)
+  }
+
+  const request = new Request(url, { ...init, signal: AbortSignal.any(signals) })
   const response = await fetch(request)
 
   if (response.ok) {
     return response
   }
 
-  throw createHttpError(response.status, { request, response })
+  throw new HTTPError(request, response)
 }
