@@ -27,7 +27,14 @@ export interface RequestOptions {
   // TODO: defaultTimeout?: number
 }
 
-export interface ThrottleOptions extends RateLimitedQueueOptions {}
+export interface ThrottleOptions extends RateLimitedQueueOptions {
+  /** The maximum number of requests to execute per time interval. */
+  maxInProgress: Infinity
+  /** The maximum number of concurrent requests in progress */
+  maxPerInterval: 10
+  /** The length of each time interval in milliseconds. */
+  intervalLength: 1_000
+}
 
 export interface RetryOptions {
   /** Number of retry attempts for failed requests. */
