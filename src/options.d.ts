@@ -28,9 +28,9 @@ export interface RequestOptions {
 }
 
 export interface ThrottleOptions extends RateLimitedQueueOptions {
-  /** The maximum number of requests to execute per time interval. */
-  maxInProgress: Infinity
   /** The maximum number of concurrent requests in progress */
+  maxInProgress: Infinity
+  /** The maximum number of requests to execute per time interval. */
   maxPerInterval: 10
   /** The length of each time interval in milliseconds. */
   intervalLength: 1_000
