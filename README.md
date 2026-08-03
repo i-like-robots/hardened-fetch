@@ -46,8 +46,8 @@ Constructor Options:
 | ------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | `baseUrl`           | `string`      | A base URL to prepend to each request, optional.                                                         |
 | `defaultHeaders`    | `HeadersInit` | Default headers to add to each request, optional.                                                        |
-| `maxInProgress`     | `number`      | The maximum number of requests to execute per time interval.                                             |
-| `maxPerInterval`    | `number`      | The maximum number of concurrent requests in progress.                                                   |
+| `maxInProgress`     | `number`      | The maximum number of concurrent requests in progress.                                                   |
+| `maxPerInterval`    | `number`      | The maximum number of requests to execute per time interval.                                             |
 | `intervalLength`    | `number`      | The length of each time interval in milliseconds.                                                        |
 | `maxRetries`        | `number`      | Number of retry attempts for failed requests.                                                            |
 | `doNotRetryMethods` | `string[]`    | List of HTTP methods that will not trigger a retry attempt.                                              |
